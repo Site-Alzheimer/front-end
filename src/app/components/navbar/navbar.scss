@@ -32,6 +32,12 @@
   background: var(--color-primary);
 }
 
+.navbar__logo img {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
 .navbar__links {
   display: flex;
   align-items: center;
