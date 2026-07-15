@@ -1,0 +1,62 @@
+:root {
+  // Brand
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-hero-blue-start: #7fa3e0;
+  --color-hero-blue-end: #4d75c2;
+
+  // Neutrals
+  --color-bg: #f2f3f5;
+  --color-surface: #ffffff;
+  --color-text: #14171f;
+  --color-text-muted: #565d6b;
+  --color-border: #e4e6eb;
+  --color-disabled-bg: #e2e4e8;
+  --color-disabled-text: #9aa0ab;
+
+  // Type
+  --font-display: 'Sora', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  // Layout
+  --max-width: 1240px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,98 @@
+<section class="hero" id="inicio">
+  <div class="hero__grid container">
+    <div class="hero__content">
+      <h1 class="hero__title">
+        Inferência estatística e aprendizado de máquina no auxílio ao
+        diagnóstico da doença de Alzheimer
+      </h1>
+
+      <p class="hero__subtitle">
+        Uma plataforma colaborativa que utiliza modelos avançados de Machine
+        Learning e imagens de ressonância magnética para o diagnóstico
+        preciso e precoce de condições neurodegenerativas.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#diagnostico">Começar Diagnóstico</a>
+        <a class="btn btn--secondary" href="#equipe" aria-disabled="true">Entrar em Contato</a>
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__panel">
+        <svg class="hero__brain" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração estilizada de um cérebro com sobreposição de análise computacional">
+          <defs>
+            <radialGradient id="brainShade" cx="35%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="#f2b3a3"/>
+              <stop offset="100%" stop-color="#d97a68"/>
+            </radialGradient>
+            <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <g transform="translate(60,60)">
+            <path class="brain__mass" d="M150 8
+              C100 8 66 30 52 62
+              C30 60 8 82 10 112
+              C-4 122 -6 150 10 168
+              C2 190 14 216 40 224
+              C40 252 62 270 88 270
+              C96 292 122 306 150 300
+              C168 316 200 316 216 298
+              C244 306 270 288 274 260
+              C298 250 308 224 296 200
+              C310 178 306 148 284 132
+              C288 104 268 78 238 70
+              C226 40 196 20 164 22
+              C160 16 156 10 150 8 Z"
+              fill="url(#brainShade)"/>
+
+            <path class="brain__fold" d="M60 70 C90 50 130 46 160 58" />
+            <path class="brain__fold" d="M46 108 C82 96 118 100 140 118" />
+            <path class="brain__fold" d="M34 150 C66 142 100 148 122 166" />
+            <path class="brain__fold" d="M52 200 C84 196 112 206 128 224" />
+            <path class="brain__fold" d="M100 250 C124 240 150 244 168 260" />
+            <path class="brain__fold" d="M180 40 C202 46 220 62 226 84" />
+            <path class="brain__fold" d="M210 90 C236 96 252 116 254 140" />
+            <path class="brain__fold" d="M226 156 C252 158 270 176 272 198" />
+            <path class="brain__fold" d="M206 236 C228 234 248 246 254 264" />
+
+            <path class="brain__stem" d="M150 300 C148 320 150 336 160 348 C170 358 184 358 192 346 C198 336 196 320 190 306" />
+          </g>
+
+          <g class="brain__mesh" transform="translate(60,60)" opacity="0.55">
+            <line x1="210" y1="70" x2="260" y2="110"/>
+            <line x1="260" y1="110" x2="300" y2="150"/>
+            <line x1="260" y1="110" x2="250" y2="170"/>
+            <line x1="300" y1="150" x2="288" y2="200"/>
+            <line x1="250" y1="170" x2="288" y2="200"/>
+            <circle cx="210" cy="70" r="3.5"/>
+            <circle cx="260" cy="110" r="3.5"/>
+            <circle cx="300" cy="150" r="3.5"/>
+            <circle cx="250" cy="170" r="3.5"/>
+            <circle cx="288" cy="200" r="3.5"/>
+          </g>
+
+          <g class="brain__nodes" filter="url(#glow)">
+            <circle cx="352" cy="176" r="9"/>
+            <circle cx="322" cy="252" r="7"/>
+          </g>
+        </svg>
+
+        <div class="hero__tooltip">
+          <p class="hero__tooltip-title">Sobre o Alzheimer</p>
+          <p class="hero__tooltip-text">
+            Estima-se que uma parcela significativa das pessoas com demência
+            no mundo ainda não recebeu um diagnóstico formal, segundo dados
+            da Alzheimer's Disease International.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,181 @@
+.hero {
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 40px;
+  min-height: 640px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.hero__content {
+  padding-right: 24px;
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  line-height: 1.18;
+  font-weight: 700;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+}
+
+.hero__subtitle {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 42ch;
+  margin: 0 0 32px;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.55);
+
+  &:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+  }
+}
+
+.btn--secondary {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+.hero__visual {
+  position: relative;
+  height: 100%;
+  min-height: 560px;
+}
+
+.hero__panel {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(14% 0%, 100% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(135deg, var(--color-hero-blue-start), var(--color-hero-blue-end));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero__brain {
+  width: 62%;
+  max-width: 340px;
+  height: auto;
+  filter: drop-shadow(0 20px 30px rgba(20, 30, 60, 0.25));
+}
+
+.brain__mass {
+  stroke: none;
+}
+
+.brain__fold {
+  fill: none;
+  stroke: rgba(150, 50, 40, 0.35);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.brain__stem {
+  fill: none;
+  stroke: rgba(150, 50, 40, 0.4);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.brain__mesh {
+  line, circle {
+    stroke: #ffffff;
+  }
+  line {
+    stroke-width: 1.2;
+  }
+  circle {
+    fill: #ffffff;
+  }
+}
+
+.brain__nodes circle {
+  fill: #f5a623;
+}
+
+.hero__tooltip {
+  position: absolute;
+  top: 14%;
+  right: 6%;
+  width: 220px;
+  background: rgba(16, 32, 64, 0.82);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.35);
+}
+
+.hero__tooltip-title {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.hero__tooltip-text {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+@media (max-width: 900px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .hero__content {
+    padding-right: 0;
+    order: 1;
+  }
+
+  .hero__visual {
+    order: 2;
+    min-height: 420px;
+  }
+
+  .hero__panel {
+    clip-path: none;
+    border-radius: 24px;
+    position: relative;
+    min-height: 420px;
+  }
+
+  .hero__tooltip {
+    width: 70%;
+    right: 8%;
+  }
+}

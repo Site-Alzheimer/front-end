@@ -1,0 +1,32 @@
+<header class="navbar">
+  <div class="navbar__inner container">
+    <a class="navbar__brand" href="#inicio">
+      <span class="navbar__logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="7" y="2" width="6" height="16" rx="3" fill="white"/>
+        </svg>
+      </span>
+      <span class="navbar__name">NeuroIA</span>
+    </a>
+
+    <nav class="navbar__links" [class.is-open]="menuOpen()">
+      @for (link of links; track link.href) {
+        <a class="navbar__link" [class.is-active]="link.label === 'Início'" [href]="link.href">
+          {{ link.label | uppercase }}
+        </a>
+      }
+    </nav>
+
+    <button
+      class="navbar__toggle"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-label="Abrir menu de navegação"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
