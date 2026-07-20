@@ -1,0 +1,27 @@
+<section class="downloads">
+  <div class="container">
+    <h2 class="downloads__heading">Downloads</h2>
+
+    <div class="downloads__grid">
+      @for (sample of samples; track sample.fileName) {
+        <article class="sample-card">
+          <div class="sample-card__image">
+            <img [src]="sample.imagePath" [alt]="sample.label + ' - ressonância magnética'" />
+          </div>
+
+          <div class="sample-card__body">
+            <p class="sample-card__text">
+              <strong>{{ sample.label }}</strong><br />
+              <strong>Fonte:</strong> {{ sample.source }}<br />
+              {{ sample.diagnosis }}
+            </p>
+
+            <a class="sample-card__button" [href]="sample.imagePath" [download]="sample.fileName">
+              Baixa Imagem de Exemplo
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

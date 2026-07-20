@@ -1,0 +1,44 @@
+<section class="inference" id="diagnostico">
+  <div class="container">
+    <div class="inference__card">
+      <h2 class="inference__title">Máquina de Inferência</h2>
+      <p class="inference__subtitle">
+        Submeta o arquivo de ressonância magnética, acompanhe o
+        processamento e aguarde os resultados.
+      </p>
+
+      <div
+        class="dropzone"
+        [class.is-dragging]="isDragging()"
+        (click)="openFilePicker()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        <span class="dropzone__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 16V6M12 6L7 11M12 6L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+
+        @if (fileName()) {
+          <p class="dropzone__title">{{ fileName() }}</p>
+          <p class="dropzone__hint">Clique ou arraste outro arquivo para substituir</p>
+        } @else {
+          <p class="dropzone__title">Carregar Imagem</p>
+          <p class="dropzone__hint">Arraste para cá sua imagem</p>
+        }
+
+        <input
+          #fileInput
+          class="dropzone__input"
+          type="file"
+          accept=".nii,.nii.gz,image/*"
+          (change)="onFileSelected($event)"
+          (click)="$event.stopPropagation()"
+        />
+      </div>
+    </div>
+  </div>
+</section>
