@@ -1,0 +1,17 @@
+<section class="team" id="equipe">
+  <div class="container">
+    <h2 class="team__heading">Equipe</h2>
+
+    <div class="team__grid">
+      @for (member of members; track $index) {
+        <article class="member" [class.member--highlight]="member.highlight">
+          <div class="member__photo"></div>
+          <div class="member__info">
+            <p class="member__name">{{ member.name }}</p>
+            <p class="member__role">{{ member.role }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </div>
+</section>

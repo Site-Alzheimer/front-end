@@ -1,0 +1,16 @@
+<section class="sponsors">
+  <div class="container">
+    <h2 class="sponsors__heading">Apoios</h2>
+
+    <div class="sponsors__grid">
+      @for (sponsor of sponsors; track sponsor.logo) {
+        <div class="sponsor">
+          <div class="sponsor__badge">
+            <img [src]="sponsor.logo" [alt]="sponsor.alt" />
+          </div>
+          <p class="sponsor__name">{{ sponsor.name }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

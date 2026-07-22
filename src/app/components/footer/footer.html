@@ -1,0 +1,34 @@
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <span class="footer__logo" aria-hidden="true">
+        <img src="assets/icon/logo-neuroia.svg" alt="" />
+      </span>
+      <span class="footer__name">NeuroIA</span>
+    </div>
+
+    <div class="footer__column">
+      <h3 class="footer__title">Tópicos:</h3>
+      <ul class="footer__list">
+        @for (link of topicLinks; track link.href) {
+          <li><a [href]="link.href">{{ link.label }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div class="footer__column">
+      <h3 class="footer__title">Contato:</h3>
+      <ul class="footer__list">
+        <li>Whatsapp</li>
+        <li>Email</li>
+      </ul>
+    </div>
+
+    <div class="footer__column">
+      <h3 class="footer__title">Referências:</h3>
+      <ul class="footer__list">
+        <li>Nome da página</li>
+      </ul>
+    </div>
+  </div>
+</footer>
