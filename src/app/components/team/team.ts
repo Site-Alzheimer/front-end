@@ -14,7 +14,7 @@ interface TeamMember {
 })
 export class Team {
   protected readonly members: TeamMember[] = [
-    { name: 'Nome da pessoa', role: 'Responsabilidades', highlight: true },
+    { name: 'Saraiva', role: 'Responsabilidades', highlight: true },
     { name: 'Nome da pessoa', role: 'Responsabilidades' },
     { name: 'Nome da pessoa', role: 'Responsabilidades' },
     { name: 'Nome da pessoa', role: 'Responsabilidades' },
