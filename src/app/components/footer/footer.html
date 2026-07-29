@@ -1,34 +1,50 @@
 <footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__brand">
-      <span class="footer__logo" aria-hidden="true">
-        <img src="assets/icon/logo-neuroia.svg" alt="" />
-      </span>
-      <span class="footer__name">NeuroIA</span>
+  <div class="container">
+    <div class="footer__main">
+      <div class="footer__brand">
+        <a class="footer__identity" href="#inicio">
+          <span class="footer__logo" aria-hidden="true">
+            <img src="assets/icon/logo-neuroia.svg" alt="" />
+          </span>
+          <span class="footer__name">NeuroIA</span>
+        </a>
+        <p class="footer__description">
+          Tecnologia e pesquisa colaborativa no auxílio à análise de condições
+          neurodegenerativas.
+        </p>
+      </div>
+
+      <div class="footer__column">
+        <h3 class="footer__title">Navegação</h3>
+        <ul class="footer__list">
+          @for (link of topicLinks; track link.href) {
+            <li><a [href]="link.href">{{ link.label }}</a></li>
+          }
+        </ul>
+      </div>
+
+      <div class="footer__column">
+        <h3 class="footer__title">Informações</h3>
+        <ul class="footer__list">
+          <li><a href="#diagnostico">Máquina de Inferência</a></li>
+          <li><a href="#equipe">Conheça a equipe</a></li>
+          <li>
+            <a href="https://www.alzint.org/" target="_blank" rel="noopener noreferrer">
+              Alzheimer's Disease International
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="footer__back-top" href="#inicio" aria-label="Voltar ao início">
+        <span>↑</span>
+        Voltar ao topo
+      </a>
     </div>
 
-    <div class="footer__column">
-      <h3 class="footer__title">Tópicos:</h3>
-      <ul class="footer__list">
-        @for (link of topicLinks; track link.href) {
-          <li><a [href]="link.href">{{ link.label }}</a></li>
-        }
-      </ul>
-    </div>
-
-    <div class="footer__column">
-      <h3 class="footer__title">Contato:</h3>
-      <ul class="footer__list">
-        <li>Whatsapp</li>
-        <li>Email</li>
-      </ul>
-    </div>
-
-    <div class="footer__column">
-      <h3 class="footer__title">Referências:</h3>
-      <ul class="footer__list">
-        <li>Nome da página</li>
-      </ul>
+    <div class="footer__bottom">
+      <p>© {{ currentYear }} NeuroIA. Todos os direitos reservados.</p>
+      <p>Conteúdo informativo e educacional. Não substitui avaliação médica.</p>
     </div>
   </div>
 </footer>

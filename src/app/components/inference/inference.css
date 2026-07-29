@@ -1,25 +1,26 @@
 .inference {
-  padding: 72px 0 88px;
+  padding: 48px 0 64px;
 }
 
 .inference__card {
   background: var(--color-surface);
-  border-radius: 20px;
-  padding: 40px 40px 44px;
-  box-shadow: 0 1px 2px rgba(20, 23, 31, 0.04), 0 20px 40px -24px rgba(20, 23, 31, 0.12);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 36px 40px 40px;
+  box-shadow: 0 2px 3px rgba(20, 23, 31, 0.16);
 }
 
 .inference__title {
   margin: 0 0 8px;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .inference__subtitle {
-  margin: 0 0 28px;
-  font-size: 0.92rem;
+  margin: 0 0 16px;
+  font-size: 0.82rem;
   color: var(--color-text-muted);
 }
 
@@ -29,10 +30,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  min-height: 320px;
-  border: 2px dashed #a9c8ef;
-  border-radius: 14px;
+  gap: 10px;
+  min-height: clamp(320px, 42vh, 430px);
+  border: 1px dashed #8dbcf2;
+  border-radius: 8px;
   background: #e3eefb;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
@@ -48,8 +49,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #fff;
   color: var(--color-primary);
@@ -58,14 +59,14 @@
 
 .dropzone__title {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 600;
   color: var(--color-text);
 }
 
 .dropzone__hint {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
 }
 
@@ -79,11 +80,15 @@
 }
 
 @media (max-width: 640px) {
+  .inference .container {
+    padding: 0 15px;
+  }
+
   .inference__card {
-    padding: 28px 22px 32px;
+    padding: 24px 18px;
   }
 
   .dropzone {
-    min-height: 240px;
+    min-height: clamp(280px, 45vh, 360px);
   }
 }

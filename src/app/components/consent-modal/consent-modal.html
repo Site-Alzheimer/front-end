@@ -1,0 +1,69 @@
+<div class="consent-backdrop" role="presentation" (click)="closed.emit()">
+  <section
+    class="consent-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="consent-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="consent-modal__header">
+      <div>
+        <h2 id="consent-title">Termos de uso e consentimento informado</h2>
+        <p>
+          Leia e confirme cada item abaixo. Todos os itens obrigatórios precisam
+          ser aceitos para continuar.
+        </p>
+      </div>
+      <button class="consent-modal__close" type="button" aria-label="Fechar" (click)="closed.emit()">×</button>
+    </header>
+
+    <div class="consent-modal__body">
+      <div class="consent-modal__warning">
+        <span aria-hidden="true">⚠</span>
+        <p>
+          <strong>Este sistema não possui registro na ANVISA como dispositivo médico diagnóstico.</strong>
+          Seu uso é exclusivamente informativo e educacional e não substitui
+          laudo médico ou consulta profissional.
+        </p>
+      </div>
+
+      <h3>Limitações, privacidade e consentimento</h3>
+
+      <div class="consent-modal__terms">
+        @for (term of requiredTerms; track $index) {
+          <label class="consent-term">
+            <input
+              type="checkbox"
+              [checked]="checkedTerms()[$index]"
+              (change)="toggleRequired($index, $any($event.target).checked)"
+            />
+            <span>
+              {{ term }}
+              <small>Obrigatório</small>
+            </span>
+          </label>
+        }
+
+        <label class="consent-term">
+          <input
+            type="checkbox"
+            [checked]="optionalAccepted()"
+            (change)="optionalAccepted.set($any($event.target).checked)"
+          />
+          <span>
+            Autorizo o uso anônimo e anonimizado da minha imagem para melhoria
+            do modelo de IA, sem identificação pessoal associada.
+            <small class="is-optional">Opcional</small>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="consent-modal__footer">
+      <p><strong>{{ acceptedCount() }}</strong> de {{ requiredTerms.length }} obrigatórios confirmados</p>
+      <button type="button" [disabled]="!allRequiredAccepted()" (click)="confirm()">
+        Confirmar e continuar
+      </button>
+    </footer>
+  </section>
+</div>

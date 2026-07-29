@@ -32,6 +32,11 @@ html, body {
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-text);

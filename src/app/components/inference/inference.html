@@ -42,3 +42,10 @@
     </div>
   </div>
 </section>
+
+@if (consentOpen()) {
+  <app-consent-modal
+    (accepted)="acceptConsent()"
+    (closed)="closeConsent()"
+  />
+}

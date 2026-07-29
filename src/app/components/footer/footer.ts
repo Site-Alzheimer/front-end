@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './footer.css',
 })
 export class Footer {
+  protected readonly currentYear = new Date().getFullYear();
+
   protected readonly topicLinks = [
     { label: 'Início', href: '#inicio' },
     { label: 'Sobre', href: '#sobre' },
