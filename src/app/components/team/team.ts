@@ -20,7 +20,7 @@ export class Team {
     { name: 'Saraiva', role: 'Responsabilidades', team: 'desenvolvimento', highlight: true },
     { name: 'Diego', role: 'Responsabilidades', team: 'desenvolvimento' },
     { name: 'Daniel', role: 'Responsabilidades', team: 'desenvolvimento' },
-    { name: 'Erik', role: 'Responsabilidades', team: 'desenvolvimento' },
+    { name: 'Herik', role: 'Responsabilidades', team: 'desenvolvimento' },
     { name: 'Nome da pessoa', role: 'Responsabilidades', team: 'pesquisa', highlight: true },
     { name: 'Nome da pessoa', role: 'Responsabilidades', team: 'pesquisa' },
     { name: 'Nome da pessoa', role: 'Responsabilidades', team: 'pesquisa' },
