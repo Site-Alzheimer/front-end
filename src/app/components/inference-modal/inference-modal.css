@@ -199,58 +199,129 @@
   padding: 24px;
 }
 
-.accuracy-section {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.accuracy-section h3 {
-  font-size: 1.2rem;
-  color: #555;
-  margin: 0 0 8px;
-}
-
-.accuracy-value .value {
-  font-size: 4rem;
-  font-weight: 800;
-  color: #10b981; /* Green for normal */
-}
-
-.accuracy-value .value.alzheimer {
-  color: #ef4444; /* Red for Alzheimer */
-}
-
-.confidence-section {
-  margin-bottom: 24px;
-}
-
-.confidence-section .label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #666;
-  margin: 0 0 8px;
-}
-
-.progress-bar-container {
-  height: 12px;
-  background: #e2e8f0;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: var(--color-primary, #3b82f6);
-  border-radius: 6px;
-}
-
-.confidence-labels {
+.result-charts {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px dashed #cbd5e1;
+}
+
+/* Gráfico Pizza */
+.chart-title {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0 0 16px;
   font-weight: 600;
-  color: #888;
+}
+
+.pie-chart-wrapper {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+  position: relative;
+  /* Simula inclinação 3D */
+  transform: perspective(600px) rotateX(40deg);
+  box-shadow: 0 10px 0 #133a46; 
+}
+
+.pie-chart {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.color-box.normal {
+  background: #1e6075;
+}
+
+.color-box.alzheimer {
+  background: #df7020;
+}
+
+/* Gráfico Vertical Confiança */
+.confidence-chart {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px;
+}
+
+.vertical-gradient-bar {
+  width: 24px;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #0ea5e9 0%, #22c55e 25%, #eab308 50%, #f97316 75%, #ef4444 100%);
+  position: relative;
+}
+
+.tick {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.indicator-line {
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  height: 4px;
+  background: #000;
+  border-radius: 2px;
+  transition: bottom 0.5s ease;
+  z-index: 2;
+}
+
+.vertical-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex: 1;
+}
+
+.v-label {
+  background: #e2e8f0;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
 }
 
 .summary-card {

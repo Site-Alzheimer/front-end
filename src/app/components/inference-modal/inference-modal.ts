@@ -35,18 +35,37 @@ export class InferenceModal implements OnInit {
     return p < 0.5 ? 1 - p : p;
   }
 
-  // Getter for Confidence Bar Width based on classificacao_cv
-  protected get confidenceWidth(): string {
+  // Getter for Confidence Bar Bottom Position based on classificacao_cv
+  protected get confidenceIndicatorBottom(): string {
     const res = this.result();
     if (!res) return '0%';
     const cv = res.estatisticas_predicao?.classificacao_cv;
     switch (cv) {
-      case 'High precision': return '100%';
-      case 'Acceptable precision': return '66%';
-      case 'Moderate variability': return '33%';
-      case 'High variability': return '10%';
+      case 'High precision': return '87.5%';
+      case 'Acceptable precision': return '62.5%';
+      case 'Moderate variability': return '37.5%';
+      case 'High variability': return '12.5%';
       default: return '50%';
     }
+  }
+
+  // Getter for Pie Chart Conic Gradient
+  protected get pieGradient(): string {
+    const res = this.result();
+    if (!res) return '';
+    const pAlz = res.probabilidade_media * 100;
+    // Alzheimer (Orange) starts at 0, goes to pAlz.
+    // Normal (Blue) starts at pAlz, goes to 100.
+    return `conic-gradient(#df7020 0% ${pAlz}%, #1e6075 ${pAlz}% 100%)`;
+  }
+
+  // Helper for direct percentage rendering in the template
+  protected get alzheimerPercent(): number {
+    return (this.result()?.probabilidade_media || 0);
+  }
+
+  protected get normalPercent(): number {
+    return 1 - (this.result()?.probabilidade_media || 0);
   }
 
   ngOnInit() {

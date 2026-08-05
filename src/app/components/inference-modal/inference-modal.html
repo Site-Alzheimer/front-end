@@ -3,110 +3,114 @@
     <button class="modal-close" (click)="close()" aria-label="Fechar">&times;</button>
 
     @switch (state()) {
-      @case ('UPLOAD') {
-        <div class="modal-header">
-          <h2 class="modal-title">Máquina de Inferência</h2>
-          <p class="modal-subtitle">Submeta o arquivo de ressonância magnética para análise.</p>
-        </div>
+    @case ('UPLOAD') {
+    <div class="modal-header">
+      <h2 class="modal-title">Máquina de Inferência</h2>
+      <p class="modal-subtitle">Submeta o arquivo de ressonância magnética para análise.</p>
+    </div>
 
-        <div
-          class="dropzone"
-          [class.is-dragging]="isDragging()"
-          (click)="openFilePicker()"
-          (dragover)="onDragOver($event)"
-          (dragleave)="onDragLeave()"
-          (drop)="onDrop($event)"
-        >
-          <span class="dropzone__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 16V6M12 6L7 11M12 6L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M4 17V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
+    <div class="dropzone" [class.is-dragging]="isDragging()" (click)="openFilePicker()" (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()" (drop)="onDrop($event)">
+      <span class="dropzone__icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 16V6M12 6L7 11M12 6L17 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path d="M4 17V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V17" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
 
-          <p class="dropzone__title">Carregar Imagem</p>
-          <p class="dropzone__hint">Arraste para cá sua imagem (.nii ou .nii.gz)</p>
+      <p class="dropzone__title">Carregar Imagem</p>
+      <p class="dropzone__hint">Arraste para cá sua imagem (.nii ou .nii.gz)</p>
 
-          <input
-            #fileInput
-            class="dropzone__input"
-            type="file"
-            accept=".nii,.nii.gz,image/*"
-            (change)="onFileSelected($event)"
-            (click)="$event.stopPropagation()"
-          />
-        </div>
-      }
+      <input #fileInput class="dropzone__input" type="file" accept=".nii,.nii.gz,image/*"
+        (change)="onFileSelected($event)" (click)="$event.stopPropagation()" />
+    </div>
+    }
 
-      @case ('PROCESSING') {
-        <div class="processing-view">
-          <div class="circular-progress">
-            <svg viewBox="0 0 100 100">
-              <circle class="bg" cx="50" cy="50" r="40" />
-              <circle class="fg" cx="50" cy="50" r="40" [attr.stroke-dashoffset]="251.2 - (251.2 * progress()) / 100" />
-            </svg>
-            <div class="progress-text">{{ progress() | number:'1.0-0' }}%</div>
-          </div>
-          <p class="status-text">{{ statusMessage() }}</p>
-        </div>
-      }
+    @case ('PROCESSING') {
+    <div class="processing-view">
+      <div class="circular-progress">
+        <svg viewBox="0 0 100 100">
+          <circle class="bg" cx="50" cy="50" r="40" />
+          <circle class="fg" cx="50" cy="50" r="40" [attr.stroke-dashoffset]="251.2 - (251.2 * progress()) / 100" />
+        </svg>
+        <div class="progress-text">{{ progress() | number:'1.0-0' }}%</div>
+      </div>
+      <p class="status-text">{{ statusMessage() }}</p>
+    </div>
+    }
 
-      @case ('RESULT') {
-        @if (errorMessage()) {
-          <div class="error-view">
-            <div class="error-icon">!</div>
-            <h3>Erro no Processamento</h3>
-            <p>{{ errorMessage() }}</p>
-            <button class="btn-primary" (click)="reset()">Tentar Novamente</button>
-          </div>
-        } @else {
-          <div class="result-view">
-            <div class="result-header">
-              <h2>Diagnosticador ML</h2>
-              <p>{{ displayAccuracy | percent:'1.1-1' }} de Acurácia</p>
-            </div>
-            
-            <div class="result-body">
-              <div class="accuracy-section">
-                <h3>Diagnóstico</h3>
-                <div class="accuracy-value">
-                  <span class="value" [class.alzheimer]="result()?.diagnostico === 'Alzheimer'">
-                    {{ result()?.diagnostico }}
-                  </span>
-                </div>
-              </div>
+    @case ('RESULT') {
+    @if (errorMessage()) {
+    <div class="error-view">
+      <div class="error-icon">!</div>
+      <h3>Erro no Processamento</h3>
+      <p>{{ errorMessage() }}</p>
+      <button class="btn-primary" (click)="reset()">Tentar Novamente</button>
+    </div>
+    } @else {
+    <div class="result-view">
+      <div class="result-header">
+        <h2>Diagnosticador ML</h2>
+        <p>{{ displayAccuracy | percent:'1.1-1' }} de Acurácia</p>
+      </div>
 
-              <div class="confidence-section">
-                <p class="label">Medidor de Confiança</p>
-                <div class="progress-bar-container">
-                  <div class="progress-bar-fill" [style.width]="confidenceWidth"></div>
-                </div>
-                <div class="confidence-labels">
-                  <span>BAIXA</span>
-                  <span>MÉDIA</span>
-                  <span>ALTA</span>
-                </div>
-              </div>
+      <div class="result-body">
+        <div class="result-charts">
+          <!-- Gráfico Pizza: Acurácia -->
+          <div class="chart-container accuracy-chart">
+            <h3 class="chart-title">Acurácia</h3>
 
-              <div class="summary-card">
-                <div class="summary-title">
-                  <span class="icon">i</span>
-                  <h4>Resumo da avaliação</h4>
-                </div>
-                <p>
-                  O modelo classificou a amostra como <strong>{{ result()?.diagnostico }}</strong> 
-                  com probabilidade média de {{ displayAccuracy | percent:'1.1-1' }}. 
-                  A confiança (desvio padrão) é de {{ result()?.estatisticas_predicao?.desvio_padrao | number:'1.4-4' }}, 
-                  o que indica consistência entre os slices analisados.
-                </p>
+            <div class="pie-chart-wrapper">
+              <div class="pie-chart" [style.background]="pieGradient">
+                <!-- Exibe o percentual do diagnóstico majoritário no centro (opcional) -->
               </div>
             </div>
-            <div class="result-footer">
-              <button class="btn-primary" (click)="reset()">Nova Análise</button>
+
+            <div class="pie-legend">
+              <span class="legend-item"><span class="color-box normal"></span> Normal ({{ normalPercent |
+                percent:'1.1-1' }})</span>
+              <span class="legend-item"><span class="color-box alzheimer"></span> Alzheimer ({{ alzheimerPercent |
+                percent:'1.1-1' }})</span>
             </div>
           </div>
-        }
-      }
+
+          <!-- Gráfico Vertical: Confiança -->
+          <div class="chart-container confidence-chart">
+            <div class="vertical-gradient-bar">
+              <div class="tick" style="top: 25%"></div>
+              <div class="tick" style="top: 50%"></div>
+              <div class="tick" style="top: 75%"></div>
+              <!-- Linha preta indicadora -->
+              <div class="indicator-line" [style.bottom]="confidenceIndicatorBottom"></div>
+            </div>
+            <div class="vertical-labels">
+              <div class="v-label">Elevada Precisão</div>
+              <div class="v-label">Precisão Aceitável</div>
+              <div class="v-label">Variabilidade Moderada</div>
+              <div class="v-label">Alta Variabilidade</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-title">
+            <span class="icon">i</span>
+            <h4>Resumo da avaliação</h4>
+          </div>
+          <p>
+            O modelo classificou a amostra como <strong>{{ result()?.diagnostico }}</strong>
+            com probabilidade média de {{ displayAccuracy | percent:'1.1-1' }}.
+          </p>
+        </div>
+      </div>
+      <div class="result-footer">
+        <button class="btn-primary" (click)="reset()">Nova Análise</button>
+      </div>
+    </div>
+    }
+    }
     }
   </div>
 </div>
