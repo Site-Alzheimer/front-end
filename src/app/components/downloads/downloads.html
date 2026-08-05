@@ -1,68 +1,57 @@
 <section class="downloads">
   <div class="container">
-    <h2 class="downloads__heading">Seleção</h2>
+    <h2 class="downloads__heading">Selecione uma das nossas imagens disponíveis:</h2>
 
     <div class="carousel">
-      <button
-        type="button"
-        class="carousel__nav carousel__nav--prev"
-        (click)="prev()"
-        aria-label="Amostras anteriores"
-      >
+      <button type="button" class="carousel__nav carousel__nav--prev" (click)="prev()" aria-label="Amostras anteriores">
         ‹
       </button>
 
       <div class="carousel__viewport">
-        <div
-          class="carousel__track"
-          [style.transform]="'translateX(-' + (currentPage() * 100) + '%)'"
-        >
+        <div class="carousel__track" [style.transform]="'translateX(-' + (currentPage() * 100) + '%)'">
           @for (page of pages(); track $index) {
-            <div class="carousel__page downloads__grid">
-              @for (sample of page; track sample.fileName + $index) {
-                <article class="sample-card">
-                  <div class="sample-card__image">
-                    <img [src]="sample.imagePath" [alt]="sample.label + ' - ressonância magnética'" />
-                  </div>
+          <div class="carousel__page downloads__grid">
+            @for (sample of page; track sample.fileName + $index) {
+            <article class="sample-card">
+              <div class="sample-card__image">
+                <img [src]="sample.imagePath" [alt]="sample.label + ' - ressonância magnética'" />
+              </div>
 
-                  <div class="sample-card__body">
-                    <p class="sample-card__text">
-                      <strong>{{ sample.label }}</strong><br />
-                      <strong>Fonte:</strong> {{ sample.source }}<br />
-                      {{ sample.diagnosis }}
-                    </p>
+              <div class="sample-card__body">
+                <p class="sample-card__text">
+                  <strong>{{ sample.label }}</strong><br />
+                  <strong>Fonte:</strong> {{ sample.source }}<br />
+                  {{ sample.diagnosis }}
+                </p>
 
-                    <a class="sample-card__button" [href]="sample.imagePath" [download]="sample.fileName">
-                      Baixa Imagem de Exemplo
-                    </a>
-                  </div>
-                </article>
-              }
-            </div>
+                <a class="sample-card__button" [href]="sample.imagePath" [download]="sample.fileName">
+                  Baixa Imagem de Exemplo
+                </a>
+              </div>
+            </article>
+            }
+          </div>
           }
         </div>
       </div>
 
-      <button
-        type="button"
-        class="carousel__nav carousel__nav--next"
-        (click)="next()"
-        aria-label="Próximas amostras"
-      >
+      <button type="button" class="carousel__nav carousel__nav--next" (click)="next()" aria-label="Próximas amostras">
         ›
       </button>
     </div>
 
     <div class="carousel__dots">
       @for (page of pages(); track $index) {
-        <button
-          type="button"
-          class="carousel__dot"
-          [class.carousel__dot--active]="currentPage() === $index"
-          (click)="goTo($index)"
-          [attr.aria-label]="'Ir para página ' + ($index + 1)"
-        ></button>
+      <button type="button" class="carousel__dot" [class.carousel__dot--active]="currentPage() === $index"
+        (click)="goTo($index)" [attr.aria-label]="'Ir para página ' + ($index + 1)"></button>
       }
+    </div>
+
+    <div class="downloads__upload-section">
+      <span class="downloads__separator">ou</span>
+      <button class="downloads__upload-button">
+        Carregue uma imagem sua!
+      </button>
     </div>
   </div>
 </section>
