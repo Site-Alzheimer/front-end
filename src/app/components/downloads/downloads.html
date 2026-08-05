@@ -24,9 +24,9 @@
                   {{ sample.diagnosis }}
                 </p>
 
-                <a class="sample-card__button" [href]="sample.imagePath" [download]="sample.fileName">
+                <button class="sample-card__button" (click)="loadExampleImage(sample)">
                   Baixa Imagem de Exemplo
-                </a>
+                </button>
               </div>
             </article>
             }
@@ -49,9 +49,16 @@
 
     <div class="downloads__upload-section">
       <span class="downloads__separator">ou</span>
-      <button class="downloads__upload-button">
+      <button class="downloads__upload-button" (click)="openInferenceModal()">
         Carregue uma imagem sua!
       </button>
     </div>
   </div>
 </section>
+
+@if (inferenceModalOpen()) {
+  <app-inference-modal
+    [initialFile]="initialInferenceFile()"
+    (closed)="closeInferenceModal()"
+  />
+}

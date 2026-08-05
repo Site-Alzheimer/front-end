@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { InferenceModal } from '../inference-modal/inference-modal';
 
 interface DownloadSample {
   fileName: string;
@@ -10,12 +11,15 @@ interface DownloadSample {
 
 @Component({
   selector: 'app-downloads',
-  imports: [],
+  imports: [InferenceModal],
   templateUrl: './downloads.html',
   styleUrl: './downloads.css',
 })
 export class Downloads {
   protected readonly itemsPerPage = 4;
+
+  protected readonly inferenceModalOpen = signal(false);
+  protected readonly initialInferenceFile = signal<File | null>(null);
 
   protected readonly samples: DownloadSample[] = [
     {
@@ -101,5 +105,28 @@ export class Downloads {
 
   protected goTo(index: number): void {
     this.currentPage.set(index);
+  }
+
+  protected openInferenceModal(file: File | null = null): void {
+    this.initialInferenceFile.set(file);
+    this.inferenceModalOpen.set(true);
+  }
+
+  protected closeInferenceModal(): void {
+    this.inferenceModalOpen.set(false);
+    this.initialInferenceFile.set(null);
+  }
+
+  protected async loadExampleImage(sample: DownloadSample): Promise<void> {
+    try {
+      const response = await fetch(sample.imagePath);
+      const blob = await response.blob();
+      const file = new File([blob], sample.fileName, { type: blob.type });
+      this.openInferenceModal(file);
+    } catch (e) {
+      console.error('Failed to load example image', e);
+      // Open modal anyway so user can upload manually if they want
+      this.openInferenceModal(null);
+    }
   }
 }
