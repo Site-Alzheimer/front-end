@@ -1,5 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { InferenceModal } from '../inference-modal/inference-modal';
+import { ConsentModal } from '../consent-modal/consent-modal';
 
 interface DownloadSample {
   fileName: string;
@@ -11,7 +12,7 @@ interface DownloadSample {
 
 @Component({
   selector: 'app-downloads',
-  imports: [InferenceModal],
+  imports: [InferenceModal, ConsentModal],
   templateUrl: './downloads.html',
   styleUrl: './downloads.css',
 })
@@ -20,6 +21,9 @@ export class Downloads {
 
   protected readonly inferenceModalOpen = signal(false);
   protected readonly initialInferenceFile = signal<File | null>(null);
+  
+  protected readonly consentOpen = signal(false);
+  private pendingInferenceFile: File | null = null;
 
   protected readonly samples: DownloadSample[] = [
     {
@@ -107,9 +111,21 @@ export class Downloads {
     this.currentPage.set(index);
   }
 
-  protected openInferenceModal(file: File | null = null): void {
-    this.initialInferenceFile.set(file);
+  protected requestConsent(file: File | null = null): void {
+    this.pendingInferenceFile = file;
+    this.consentOpen.set(true);
+  }
+
+  protected acceptConsent(): void {
+    this.consentOpen.set(false);
+    this.initialInferenceFile.set(this.pendingInferenceFile);
     this.inferenceModalOpen.set(true);
+    this.pendingInferenceFile = null;
+  }
+
+  protected closeConsent(): void {
+    this.consentOpen.set(false);
+    this.pendingInferenceFile = null;
   }
 
   protected closeInferenceModal(): void {
@@ -122,11 +138,11 @@ export class Downloads {
       const response = await fetch(sample.imagePath);
       const blob = await response.blob();
       const file = new File([blob], sample.fileName, { type: blob.type });
-      this.openInferenceModal(file);
+      this.requestConsent(file);
     } catch (e) {
       console.error('Failed to load example image', e);
       // Open modal anyway so user can upload manually if they want
-      this.openInferenceModal(null);
+      this.requestConsent(null);
     }
   }
 }

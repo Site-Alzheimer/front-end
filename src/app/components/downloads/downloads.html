@@ -49,7 +49,7 @@
 
     <div class="downloads__upload-section">
       <span class="downloads__separator">ou</span>
-      <button class="downloads__upload-button" (click)="openInferenceModal()">
+      <button class="downloads__upload-button" (click)="requestConsent()">
         Carregue uma imagem sua!
       </button>
     </div>
@@ -60,5 +60,12 @@
   <app-inference-modal
     [initialFile]="initialInferenceFile()"
     (closed)="closeInferenceModal()"
+  />
+}
+
+@if (consentOpen()) {
+  <app-consent-modal
+    (accepted)="acceptConsent()"
+    (closed)="closeConsent()"
   />
 }
