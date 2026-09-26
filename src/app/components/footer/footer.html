@@ -2,7 +2,7 @@
   <div class="container">
     <div class="footer__main">
       <div class="footer__brand">
-        <a class="footer__identity" href="#inicio">
+        <a class="footer__identity" routerLink="/" fragment="inicio">
           <span class="footer__logo" aria-hidden="true">
             <img src="assets/icon/logo-neuroia.svg" alt="" />
           </span>
@@ -17,8 +17,8 @@
       <div class="footer__column">
         <h3 class="footer__title">Navegação</h3>
         <ul class="footer__list">
-          @for (link of topicLinks; track link.href) {
-            <li><a [href]="link.href">{{ link.label }}</a></li>
+          @for (link of topicLinks; track link.fragment) {
+            <li><a routerLink="/" [fragment]="link.fragment">{{ link.label }}</a></li>
           }
         </ul>
       </div>
@@ -26,8 +26,8 @@
       <div class="footer__column">
         <h3 class="footer__title">Informações</h3>
         <ul class="footer__list">
-          <li><a href="#diagnostico">Máquina de Inferência</a></li>
-          <li><a href="#equipe">Conheça a equipe</a></li>
+          <li><a routerLink="/analise">Máquina de Inferência</a></li>
+          <li><a routerLink="/" fragment="equipe">Conheça a equipe</a></li>
           <li>
             <a href="https://www.alzint.org/" target="_blank" rel="noopener noreferrer">
               Alzheimer's Disease International
@@ -36,8 +36,8 @@
         </ul>
       </div>
 
-      <a class="footer__back-top" href="#inicio" aria-label="Voltar ao início">
-        <span>↑</span>
+      <a class="footer__back-top" routerLink="/" fragment="inicio" aria-label="Voltar ao início">
+        <app-icon name="arrow-up" />
         Voltar ao topo
       </a>
     </div>

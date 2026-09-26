@@ -1,9 +1,10 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, inject, output, signal } from '@angular/core';
+import { Icon } from '../../shared/icon/icon';
 
 @Component({
   selector: 'app-consent-modal',
-  imports: [],
+  imports: [Icon],
   templateUrl: './consent-modal.html',
   styleUrl: './consent-modal.css',
 })
@@ -11,7 +12,8 @@ export class ConsentModal implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
   private previousBodyOverflow = '';
 
-  readonly accepted = output<void>();
+  /** Emite se o uso anonimizado (item opcional) foi autorizado. */
+  readonly accepted = output<boolean>();
   readonly closed = output<void>();
 
   protected readonly requiredTerms = [
@@ -23,7 +25,7 @@ export class ConsentModal implements OnInit, OnDestroy {
     'Sou titular dos dados de saúde enviados ou possuo autorização expressa do titular para realizar este envio.',
     'Estou ciente de que a imagem enviada contém dados sensíveis de saúde e será utilizada somente para o processamento solicitado.',
   ];
-
+  
   protected readonly checkedTerms = signal<boolean[]>(
     this.requiredTerms.map(() => false),
   );
@@ -52,7 +54,7 @@ export class ConsentModal implements OnInit, OnDestroy {
 
   protected confirm(): void {
     if (this.allRequiredAccepted()) {
-      this.accepted.emit();
+      this.accepted.emit(this.optionalAccepted());
     }
   }
 }

@@ -1,0 +1,52 @@
+@let v = view();
+<div class="summary">
+  <div class="ui-card verdict" [class.verdict--ad]="isAd()">
+    <p class="label">Classificação da IA</p>
+    <p class="verdict__word">
+      <i class="verdict__mark" aria-hidden="true"></i>{{ isAd() ? 'Alzheimer' : 'Normal' }}
+    </p>
+    <p class="verdict__text">
+      {{
+        isAd()
+          ? 'O modelo encontrou indícios de doença de Alzheimer neste exame.'
+          : 'O modelo não encontrou indícios de doença de Alzheimer neste exame.'
+      }}
+    </p>
+    <p class="hint verdict__rule">
+      A classificação compara a média das 19 fatias com o limiar 0,5: acima dele, Alzheimer.
+    </p>
+  </div>
+
+  <div class="ui-card tile">
+    <p class="label">Probabilidade média por classe <small>média das 19 fatias</small></p>
+    <app-class-donut [pAd]="v.mean" [isAd]="isAd()" />
+  </div>
+
+  <div class="ui-card tile">
+    <p class="label">Consistência entre as fatias</p>
+    <app-cv-gauge [cv]="v.cv" [sd]="v.sd" />
+  </div>
+
+  <div class="ui-card tile">
+    <p class="label">Votos por fatia <small>informativo</small></p>
+    <p class="tile__value">
+      {{ v.votes }}<small>de {{ v.slices.length }} fatias acima de 0,5</small>
+    </p>
+    <div
+      class="votes"
+      role="img"
+      [attr.aria-label]="v.votes + ' de ' + v.slices.length + ' fatias com voto DA'"
+    >
+      @for (s of v.slices; track s.k) {
+        <i
+          class="votes__dot"
+          [class.votes__dot--ad]="s.p > 0.5"
+          [class.votes__dot--center]="s.offset === 0"
+          [attr.title]="sliceTitle(s)"
+        ></i>
+      }
+    </div>
+    <p class="votes__axis"><span>posterior</span><span>central</span><span>anterior</span></p>
+    <p class="hint">A classificação usa a média das probabilidades, não a contagem de votos.</p>
+  </div>
+</div>

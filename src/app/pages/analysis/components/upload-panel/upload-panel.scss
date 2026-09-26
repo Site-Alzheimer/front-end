@@ -1,0 +1,158 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 32px;
+  padding-bottom: 64px;
+}
+
+.drop {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  min-height: 300px;
+  padding: 32px;
+  border: 1.5px dashed var(--color-border-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover,
+  &.is-dragging {
+    border-color: var(--color-primary);
+    background: #f5f9ff;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.drop__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #eaf3fe;
+  color: var(--color-primary);
+  font-size: 1.4rem;
+}
+
+.drop__title {
+  font-weight: 600;
+}
+
+.drop__hint {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+}
+
+.problem {
+  margin: 12px 0 0;
+}
+
+.specs {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.86rem;
+  color: var(--color-text-2);
+
+  li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  app-icon {
+    margin-top: 2px;
+    color: var(--color-text-muted);
+  }
+  b {
+    font-weight: 600;
+  }
+}
+
+.samples {
+  h2 {
+    margin: 0 0 4px;
+    font: 700 1.05rem var(--font-display);
+  }
+  > p {
+    margin: 0 0 14px;
+    font-size: 0.86rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.samples__empty {
+  margin: 0;
+  padding: 16px;
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+}
+
+.sample {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
+
+  > span:nth-child(2) {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+  }
+}
+
+.sample__thumb {
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--viewer-bg);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.sample__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.sample__meta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.sample__clinical {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--color-text-2);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

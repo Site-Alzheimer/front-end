@@ -1,0 +1,115 @@
+@let v = view();
+<p class="intro">
+  A primeira rede avalia cada uma das {{ v.n }} fatias coronais do volume e dá a cada uma um score
+  de presença da região do hipocampo. As fatias com score de pelo menos 80% do máximo formam a
+  janela; o centro da janela é a fatia em torno da qual a segunda rede vai trabalhar.
+</p>
+
+<dl class="ui-card stats">
+  <div class="stat">
+    <dt>Score máximo</dt>
+    <dd>
+      {{ fmt(v.scoreMax, 2) }}<small>na fatia {{ v.indexMax }}</small>
+    </dd>
+  </div>
+  <div class="stat">
+    <dt>Limiar (80%)</dt>
+    <dd>{{ fmt(v.threshold, 2) }}</dd>
+  </div>
+  <div class="stat">
+    <dt>Fatias no limiar</dt>
+    <dd>
+      {{ v.aboveThreshold }}<small>de {{ v.n }}</small>
+    </dd>
+  </div>
+  <div class="stat">
+    <dt>Janela</dt>
+    <dd>
+      {{ v.window[0] }}–{{ v.window[1] }}<small>{{ v.window[1] - v.window[0] + 1 }} fatias</small>
+    </dd>
+  </div>
+  <div class="stat">
+    <dt>Fatia central</dt>
+    <dd>{{ v.central }}</dd>
+  </div>
+</dl>
+
+@if (v.fallback) {
+  <p class="ui-alert">
+    <app-icon name="alert-triangle" />
+    <span
+      ><strong>A CNN1 não encontrou a região.</strong> Todos os scores ficaram ≤ 0 e a janela foi
+      escolhida pela regra de reserva do pipeline. Confira se o arquivo é uma RM de crânio.</span
+    >
+  </p>
+}
+
+<div class="layout">
+  <app-mri-viewer
+    [volume]="volume()"
+    [volumeState]="volumeState()"
+    [volumeError]="volumeError()"
+    [cursor]="cursor()"
+    [crops]="v.crops"
+    [showCropToggles]="true"
+  />
+
+  <div class="ui-card chart">
+    <p class="ui-card-title">Score por fatia coronal <small>regressão, não probabilidade</small></p>
+    <app-sagittal-locator [volume]="volume()" [n]="v.n" [window]="v.window" [cursor]="cursor()" />
+    <div class="ui-legend legend">
+      <span><i class="key key--band"></i>janela da CNN1</span>
+      <span><i class="key key--line"></i>limiar (80% do máximo)</span>
+      <span><i class="key key--dot"></i>fatia central</span>
+      <span><i class="key key--cursor"></i>cursor</span>
+    </div>
+    <app-roi-chart
+      [scores]="v.scores"
+      [window]="v.window"
+      [central]="v.central"
+      [threshold]="v.threshold"
+      [cursor]="cursor()"
+      [interactive]="true"
+    />
+    <p class="axis"><span>← posterior</span><span>anterior →</span></p>
+    <div class="controls">
+      <button type="button" class="ui-button ui-button--small" (click)="toggle()">
+        <app-icon [name]="playing() ? 'player-pause' : 'player-play'" />{{
+          playing() ? 'Pausar' : 'Reproduzir varredura'
+        }}
+      </button>
+      <span #readout class="ui-num readout" aria-live="off"></span>
+    </div>
+  </div>
+</div>
+
+<p class="hint">
+  Os contornos no corte mostram a região que cada rede recebe. Arraste no gráfico ou use as setas do
+  teclado para percorrer as fatias.
+</p>
+
+<details class="ui-data" (toggle)="tableOpen.set($any($event.target).open)">
+  <summary><app-icon name="table" />Ver dados</summary>
+  @if (tableOpen()) {
+    <div class="ui-data__scroll">
+      <table class="ui-table">
+        <thead>
+          <tr>
+            <th>Fatia</th>
+            <th>Score</th>
+            <th>Na janela</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of v.scores; track $index) {
+            <tr [class.is-highlight]="$index === v.central">
+              <td class="num">{{ $index }}</td>
+              <td class="num">{{ fmt(s, 2) }}</td>
+              <td>{{ $index >= v.window[0] && $index <= v.window[1] ? 'sim' : '' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</details>

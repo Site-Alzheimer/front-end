@@ -93,7 +93,7 @@
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.footer__back-top span {
+.footer__back-top app-icon {
   font-size: 1rem;
   color: #7bb8ff;
 }

@@ -1,0 +1,140 @@
+// 2×2: a resposta (classificação) e a probabilidade em cima; consistência e votos embaixo.
+// Os cartões de cada linha esticam até a mesma altura.
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.label {
+  margin: 0 0 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-text-2);
+
+  small {
+    margin-left: 6px;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px;
+}
+
+// A classificação ganha um tom leve da cor da classe; o texto continua na cor de texto
+.verdict {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px;
+  background: #f2f7fd;
+
+  .label {
+    margin-bottom: 0;
+  }
+
+  &--ad {
+    background: #fdf3ee;
+  }
+}
+
+.verdict__word {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 6px;
+  font: 800 2.6rem/1.1 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.verdict__mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--series-normal);
+  box-shadow: 0 0 0 4px rgba(42, 120, 214, 0.16);
+
+  .verdict--ad & {
+    background: var(--series-ad);
+    box-shadow: 0 0 0 4px rgba(235, 104, 52, 0.18);
+  }
+}
+
+.verdict__text {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-text-2);
+}
+
+.verdict__rule {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.tile__value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+
+  small {
+    font-size: 0.84rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+}
+
+// Um ponto por fatia, da posterior (−9) à anterior (+9); a central tem um anel
+.votes {
+  display: grid;
+  grid-template-columns: repeat(19, minmax(0, 1fr));
+  gap: 3px;
+  margin-top: 16px;
+}
+
+.votes__dot {
+  justify-self: center;
+  width: 100%;
+  max-width: 12px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--series-normal);
+
+  &--ad {
+    background: var(--series-ad);
+  }
+
+  &--center {
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 3.5px var(--color-text-2);
+  }
+}
+
+.votes__axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1080px) {
+  .summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

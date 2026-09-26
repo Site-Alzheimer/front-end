@@ -1,52 +1,76 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, DestroyRef, afterNextRender, inject, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
-  imports: [UpperCasePipe],
+  imports: [UpperCasePipe, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar {
+  private readonly router = inject(Router);
+
   protected readonly menuOpen = signal(false);
   protected readonly hidden = signal(false);
   protected readonly activeSection = signal('inicio');
   private lastScrollY = 0;
 
   protected readonly links = [
-    { label: 'Início', href: '#inicio' },
-    { label: 'Sobre', href: '#sobre' },
-    { label: 'Diagnóstico', href: '#diagnostico' },
-    { label: 'Equipe', href: '#equipe' },
+    { label: 'Início', fragment: 'inicio' },
+    { label: 'Sobre', fragment: 'sobre' },
+    { label: 'Diagnóstico', fragment: 'diagnostico' },
+    { label: 'Equipe', fragment: 'equipe' },
   ];
+
+  constructor() {
+    // Listener passivo e fora do template: no modo zoneless, um @HostListener de scroll
+    // agendaria detecção de mudanças da aplicação inteira a cada evento.
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const onScroll = () => this.onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+      this.onScroll();
+    });
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => this.onScroll());
+  }
 
   protected toggleMenu(): void {
     this.menuOpen.update((value) => !value);
   }
 
-  protected selectSection(href: string): void {
-    this.activeSection.set(href.slice(1));
+  protected selectSection(fragment: string): void {
+    this.activeSection.set(fragment);
     this.menuOpen.set(false);
   }
 
-  @HostListener('window:scroll')
-  protected onScroll(): void {
+  private onScroll(): void {
     const currentScrollY = window.scrollY;
-
-    this.hidden.set(currentScrollY > this.lastScrollY && currentScrollY > 72);
+    const hidden = currentScrollY > this.lastScrollY && currentScrollY > 72;
+    if (hidden !== this.hidden()) this.hidden.set(hidden);
     this.lastScrollY = currentScrollY;
     this.updateActiveSection();
   }
 
   private updateActiveSection(): void {
-    const sections = this.links
-      .map((link) => document.querySelector<HTMLElement>(link.href))
-      .filter((section): section is HTMLElement => section !== null);
-
-    const current = [...sections]
+    // Fora da home, a análise pertence à seção "Diagnóstico"
+    if (
+      !this.router.url.startsWith('/#') &&
+      this.router.url !== '/' &&
+      !this.router.url.startsWith('/?')
+    ) {
+      this.activeSection.set('diagnostico');
+      return;
+    }
+    const current = [...this.links]
       .reverse()
-      .find((section) => section.getBoundingClientRect().top <= 160);
-
-    this.activeSection.set(current?.id ?? 'inicio');
+      .map((link) => document.getElementById(link.fragment))
+      .find((section) => section !== null && section.getBoundingClientRect().top <= 160);
+    const id = current?.id ?? 'inicio';
+    if (id !== this.activeSection()) this.activeSection.set(id);
   }
 }

@@ -1,0 +1,106 @@
+@let v = view();
+<p class="intro">
+  A segunda rede classifica a fatia central e as 9 vizinhas de cada lado. Cada fatia recebe uma
+  probabilidade de DA, e a classificação do exame usa a média das 19.
+</p>
+
+<div class="ui-card tiles">
+  <div class="tiles__head">
+    <p class="ui-card-title">As 19 fatias analisadas</p>
+    <div class="tools">
+      <div class="segmented" role="group" aria-label="Orientação das imagens">
+        <button type="button" [attr.aria-pressed]="!asCnnSees()" (click)="asCnnSees.set(false)">
+          Anatômica
+        </button>
+        <button type="button" [attr.aria-pressed]="asCnnSees()" (click)="asCnnSees.set(true)">
+          Como a rede vê
+        </button>
+      </div>
+      @if (v.gradcam) {
+        <button
+          type="button"
+          class="toggle-heat"
+          [attr.aria-pressed]="showHeat()"
+          (click)="showHeat.set(!showHeat())"
+        >
+          <app-icon name="eye" />Mapa de ativação
+        </button>
+      }
+    </div>
+  </div>
+  <div class="ui-legend">
+    <span><i class="ui-key ui-key--ad"></i>voto DA (acima de 0,5)</span>
+    <span><i class="ui-key ui-key--normal"></i>voto Normal</span>
+  </div>
+  @if (showHeat() && v.gradcam) {
+    <div class="heat">
+      <label class="heat__opacity"
+        >Opacidade
+        <input
+          type="range"
+          min="0.2"
+          max="1"
+          step="0.05"
+          [value]="heatOpacity()"
+          (input)="heatOpacity.set(+$any($event.target).value)"
+        />
+      </label>
+      <span class="heat__scale" [class.heat__scale--ad]="v.gradcam.targetIsAd">menos</span
+      ><span>mais peso para “{{ heatClass() }}”</span>
+    </div>
+  }
+  <app-slice-grid
+    [slices]="v.slices"
+    [sprite]="sprite()"
+    [asCnnSees]="asCnnSees()"
+    [cursor]="cursor()"
+    [heat]="showHeat() ? heatUrls() : null"
+    [heatOpacity]="heatOpacity()"
+  />
+  @if (showHeat() && v.gradcam) {
+    <p class="note">
+      O mapa de ativação (Grad-CAM, grade {{ v.gradcam.h }}×{{ v.gradcam.w }}) mostra, de forma
+      aproximada, as regiões que mais pesaram na classificação de cada fatia. Não é um achado
+      clínico.
+    </p>
+  }
+  @if (!v.images) {
+    <p class="note">A API não enviou as imagens desta análise.</p>
+  }
+</div>
+
+<div class="ui-card bars">
+  <p class="ui-card-title">Probabilidade de DA por fatia</p>
+  <div class="ui-legend">
+    <span><i class="ui-key ui-key--ad"></i>acima de 0,5 (DA)</span>
+    <span><i class="ui-key ui-key--normal"></i>abaixo de 0,5 (Normal)</span>
+  </div>
+  <app-slice-bars [slices]="v.slices" [mean]="v.mean" [cursor]="cursor()" />
+</div>
+<details class="ui-data" (toggle)="tableOpen.set($any($event.target).open)">
+  <summary><app-icon name="table" />Ver dados</summary>
+  @if (tableOpen()) {
+    <div class="ui-data__scroll">
+      <table class="ui-table">
+        <thead>
+          <tr>
+            <th>Posição</th>
+            <th>Índice</th>
+            <th>P(DA)</th>
+            <th>Voto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of v.slices; track s.k) {
+            <tr [class.is-highlight]="s.offset === 0">
+              <td>{{ label(s.offset) }}</td>
+              <td class="num">{{ s.index }}</td>
+              <td class="num">{{ fmt(s.p, 4) }}</td>
+              <td>{{ s.p > 0.5 ? 'DA' : 'Normal' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</details>

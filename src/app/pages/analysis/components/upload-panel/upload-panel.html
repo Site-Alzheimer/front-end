@@ -1,0 +1,87 @@
+<header class="ui-page-head">
+  <h1>Envie um exame de ressonância magnética</h1>
+  <p>
+    Volume 3D em NIfTI, com o plano coronal disponível. O arquivo é conferido no seu navegador antes
+    do envio e processado só para esta análise.
+  </p>
+</header>
+
+<div class="layout">
+  <div>
+    <label
+      class="drop"
+      [class.is-dragging]="dragging()"
+      (dragover)="$event.preventDefault(); dragging.set(true)"
+      (dragleave)="dragging.set(false)"
+      (drop)="onDrop($event)"
+    >
+      <span class="drop__icon"
+        ><app-icon [name]="checking() ? 'loader-2' : 'upload'" [class.is-spinning]="checking()"
+      /></span>
+      <span class="drop__title">Arraste o arquivo para cá</span>
+      <span class="drop__hint">ou</span>
+      <span class="ui-button ui-button--primary">Escolher arquivo</span>
+      <input type="file" accept=".nii,.gz" class="sr-only" (change)="onPick($event)" />
+    </label>
+    @if (problem()) {
+      <p class="ui-alert ui-alert--critical problem" role="alert">
+        <app-icon name="alert-triangle" /><span>{{ problem() }}</span>
+      </p>
+    }
+    <ul class="specs">
+      <li>
+        <app-icon name="file-description" /><span
+          >Formatos aceitos: <b>.nii</b> e <b>.nii.gz</b> (NIfTI-1 ou NIfTI-2)</span
+        >
+      </li>
+      <li>
+        <app-icon name="check" /><span
+          >O cabeçalho é validado no navegador; arquivos que não são NIfTI não chegam a ser
+          enviados</span
+        >
+      </li>
+      <li>
+        <app-icon name="server" /><span
+          >O servidor processa o exame e não guarda o arquivo depois da análise</span
+        >
+      </li>
+    </ul>
+  </div>
+
+  <section class="samples">
+    <h2>Ou use um exame de exemplo</h2>
+    <p>Processado no servidor a partir da cópia dele, sem precisar enviar nada.</p>
+    <div class="ui-card">
+      @if (samples() === null) {
+        <p class="samples__empty">Carregando…</p>
+      } @else if (samples()!.length === 0) {
+        <p class="samples__empty">Nenhum exame de exemplo disponível agora.</p>
+      } @else {
+        @for (s of samples()!; track s.id) {
+          <div class="sample">
+            <span class="sample__thumb">
+              @if (s.tem_miniatura) {
+                <img [src]="thumbnail(s)" alt="" loading="lazy" />
+              }
+            </span>
+            <span>
+              <span class="sample__name">{{ s.arquivo }}</span>
+              <span class="sample__meta">{{ s.fonte }} · {{ sizeMb(s.tamanho_bytes) }} MB</span>
+              <span class="sample__clinical">
+                <i
+                  class="ui-key"
+                  [class.ui-key--ad]="s.diagnostico_clinico === 'AD'"
+                  [class.ui-key--normal]="s.diagnostico_clinico !== 'AD'"
+                ></i>
+                Diagnóstico clínico: {{ clinical(s) }}
+              </span>
+            </span>
+            <button type="button" class="ui-button ui-button--small" (click)="useSample(s)">
+              Analisar
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </section>
+</div>

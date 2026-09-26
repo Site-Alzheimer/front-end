@@ -1,0 +1,64 @@
+<div class="viewer">
+  <div class="viewer__bar">
+    <span>Corte coronal · fatia <span #label class="ui-num">—</span></span>
+    <span>convenção neurológica</span>
+  </div>
+
+  <div class="viewer__screen">
+    @if (!volume()) {
+      <div class="viewer__empty">
+        @switch (volumeState()) {
+          @case ('loading') {
+            <app-icon name="loader-2" class="is-spinning" />
+            <span>Lendo a ressonância no navegador…</span>
+          }
+          @case ('error') {
+            <app-icon name="alert-triangle" />
+            <span
+              >Pré-visualização indisponível: {{ volumeError() }}. A análise não é afetada.</span
+            >
+          }
+          @default {
+            <app-icon name="scan" />
+            <span>A ressonância aparece aqui.</span>
+          }
+        }
+      </div>
+    }
+
+    <div
+      class="viewer__frame"
+      [hidden]="!volume()"
+      [style.width]="frameWidth()"
+      [style.aspect-ratio]="aspect()"
+    >
+      <canvas #canvas></canvas>
+      <svg #overlay class="viewer__crops" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <span class="mark mark--s">S</span>
+      <span class="mark mark--i">I</span>
+      <span class="mark mark--e">E</span>
+      <span class="mark mark--d">D</span>
+    </div>
+  </div>
+
+  @if (showCropToggles() && crops()) {
+    <div class="viewer__foot">
+      <button
+        type="button"
+        class="chip chip--cnn1"
+        [attr.aria-pressed]="showCnn1()"
+        (click)="showCnn1.set(!showCnn1())"
+      >
+        <i></i>entrada da CNN1
+      </button>
+      <button
+        type="button"
+        class="chip chip--cnn2"
+        [attr.aria-pressed]="showCnn2()"
+        (click)="showCnn2.set(!showCnn2())"
+      >
+        <i></i>entrada da CNN2
+      </button>
+    </div>
+  }
+</div>

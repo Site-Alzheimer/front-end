@@ -1,0 +1,94 @@
+@let v = view();
+<header class="ui-page-head exam">
+  <div>
+    <h1>Resultado da análise</h1>
+    <p class="exam__meta">
+      <span class="exam__file">{{ store.fileName() }}</span>
+      <span class="ui-num">{{ v.meta.dims.join(' × ') }} voxels</span>
+      <span class="ui-num"
+        >{{ fmt(v.meta.spacing[0], 2) }} × {{ fmt(v.meta.spacing[1], 2) }} ×
+        {{ fmt(v.meta.spacing[2], 2) }} mm</span
+      >
+      @if (v.meta.orientation) {
+        <span>orientação {{ v.meta.orientation }}</span>
+      }
+    </p>
+  </div>
+  <div class="exam__actions">
+    <button type="button" class="ui-button" (click)="exportJson()">
+      <app-icon name="download" />Exportar dados
+    </button>
+    <button type="button" class="ui-button ui-button--primary" (click)="store.reset()">
+      <app-icon name="upload" />Nova análise
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="Seções do resultado">
+    <ol class="rail">
+      @for (s of sections; track s.id) {
+        <li>
+          <a
+            [href]="'#' + s.id"
+            [class.is-active]="activeSection() === s.id"
+            (click)="scrollTo(s.id, $event)"
+          >
+            {{ s.label }}
+          </a>
+        </li>
+      }
+    </ol>
+  </nav>
+
+  <div>
+    <section class="section" id="s-resultado">
+      <h2 class="section__title">Resultado</h2>
+      <app-result-summary [view]="v" />
+      <aside class="ui-card note" aria-labelledby="nota-titulo">
+        <p class="note__title" id="nota-titulo"><app-icon name="info-circle" />Nota metodológica</p>
+        <ul class="note__list">
+          <li>
+            <b>Não é diagnóstico médico</b>
+            <span
+              >É uma estimativa estatística feita por redes neurais a partir de padrões de imagem.
+              Não confirma nem descarta uma doença e pode conter falsos positivos e falsos
+              negativos.</span
+            >
+          </li>
+          <li>
+            <b>Origem dos modelos</b>
+            <span
+              >Grupo do Dr. Raimundo Guimarães Saraiva Junior (IFCE). A CNN1 escolhe as fatias
+              coronais da região do hipocampo e a CNN2 classifica 19 delas. O treinamento usou
+              exames do ADNI1 Screening 1.5T.</span
+            >
+          </li>
+          <li>
+            <b>Avaliação profissional</b>
+            <span
+              >Qualquer conclusão clínica exige avaliação completa por um profissional
+              habilitado.</span
+            >
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="section" id="s-cnn1">
+      <h2 class="section__title">CNN1 · verificação e seleção do corte coronal</h2>
+      <app-cnn1-section
+        [view]="v"
+        [volume]="store.volume()"
+        [volumeState]="store.volumeState()"
+        [volumeError]="store.volumeError()"
+        [cursor]="cursor"
+      />
+    </section>
+
+    <section class="section" id="s-cnn2">
+      <h2 class="section__title">CNN2 · classificação das 19 fatias</h2>
+      <app-cnn2-section [view]="v" [cursor]="cursor" />
+    </section>
+  </div>
+</div>

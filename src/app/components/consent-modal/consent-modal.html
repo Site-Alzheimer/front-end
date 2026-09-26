@@ -14,12 +14,12 @@
           ser aceitos para continuar.
         </p>
       </div>
-      <button class="consent-modal__close" type="button" aria-label="Fechar" (click)="closed.emit()">×</button>
+      <button class="consent-modal__close" type="button" aria-label="Fechar" (click)="closed.emit()"><app-icon name="x" /></button>
     </header>
 
     <div class="consent-modal__body">
       <div class="consent-modal__warning">
-        <span aria-hidden="true">⚠</span>
+        <app-icon name="alert-triangle" />
         <p>
           <strong>Este sistema não possui registro na ANVISA como dispositivo médico diagnóstico.</strong>
           Seu uso é exclusivamente informativo e educacional e não substitui

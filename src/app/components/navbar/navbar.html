@@ -1,19 +1,20 @@
 <header class="navbar" [class.is-hidden]="hidden()">
   <div class="navbar__inner container">
-    <a class="navbar__brand" href="#inicio" (click)="selectSection('#inicio')">
+    <a class="navbar__brand" routerLink="/" fragment="inicio" (click)="selectSection('inicio')">
       <span class="navbar__logo" aria-hidden="true">
-        <img src="assets/icon/logo-neuroia.svg" alt="Logo">
+        <img src="assets/icon/logo-neuroia.svg" alt="Logo" />
       </span>
       <span class="navbar__name">NeuroIA</span>
     </a>
 
     <nav class="navbar__links" [class.is-open]="menuOpen()">
-      @for (link of links; track link.href) {
+      @for (link of links; track link.fragment) {
         <a
           class="navbar__link"
-          [class.is-active]="activeSection() === link.href.slice(1)"
-          [href]="link.href"
-          (click)="selectSection(link.href)"
+          [class.is-active]="activeSection() === link.fragment"
+          routerLink="/"
+          [fragment]="link.fragment"
+          (click)="selectSection(link.fragment)"
         >
           {{ link.label | uppercase }}
         </a>

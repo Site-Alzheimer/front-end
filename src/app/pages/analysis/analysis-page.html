@@ -1,0 +1,36 @@
+<div class="container">
+  @switch (store.phase()) {
+    @case ('idle') {
+      <app-upload-panel (start)="request($event)" />
+    }
+    @case ('processing') {
+      <app-processing-view />
+    }
+    @case ('done') {
+      <app-analysis-dashboard />
+    }
+    @case ('error') {
+      @let e = store.error();
+      <div class="error" role="alert">
+        <span class="error__icon"><app-icon name="alert-triangle" /></span>
+        <h1>{{ titles[e?.kind ?? 'server'] }}</h1>
+        <p>{{ e?.message }}</p>
+        <div class="error__actions">
+          @if (e?.kind !== 'format') {
+            <button type="button" class="ui-button ui-button--primary" (click)="store.retry()">
+              <app-icon name="refresh" />Tentar de novo
+            </button>
+          }
+          <button type="button" class="ui-button" (click)="store.reset()">
+            <app-icon name="arrow-left" />Escolher outro exame
+          </button>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- O termo só aparece quando o usuário envia o próprio exame (uma vez por sessão) -->
+  @if (awaitingConsent()) {
+    <app-consent-modal (accepted)="acceptConsent($event)" (closed)="declineConsent()" />
+  }
+</div>

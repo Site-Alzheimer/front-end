@@ -1,94 +1,50 @@
-import { Component, computed, signal } from '@angular/core';
-import { InferenceModal } from '../inference-modal/inference-modal';
-import { ConsentModal } from '../consent-modal/consent-modal';
+import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { Icon } from '../../shared/icon/icon';
+import { Sample, SamplesService } from '../../core/samples';
+import { AnalysisHandoff } from '../../core/analysis-handoff';
 
-interface DownloadSample {
-  fileName: string;
-  imagePath: string;
-  label: string;
-  source: string;
-  diagnosis: string;
-}
+const DIAGNOSTICO_CLINICO: Record<string, string> = {
+  AD: 'doença de Alzheimer',
+  CN: 'cognitivamente normal',
+  MCI: 'comprometimento cognitivo leve',
+};
 
 @Component({
   selector: 'app-downloads',
-  imports: [InferenceModal, ConsentModal],
+  imports: [Icon],
   templateUrl: './downloads.html',
   styleUrl: './downloads.css',
 })
 export class Downloads {
+  private readonly samplesService = inject(SamplesService);
+  private readonly handoff = inject(AnalysisHandoff);
+  private readonly router = inject(Router);
+
   protected readonly itemsPerPage = 4;
+  protected readonly samples = signal<Sample[]>([]);
+  protected readonly samplesState = signal<'loading' | 'ready' | 'error'>('loading');
 
-  protected readonly inferenceModalOpen = signal(false);
-  protected readonly initialInferenceFile = signal<File | null>(null);
-  
-  protected readonly consentOpen = signal(false);
-  private pendingInferenceFile: File | null = null;
-
-  protected readonly samples: DownloadSample[] = [
-    {
-      fileName: 'exemplo-1.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-2.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-3.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-4.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-5.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-6.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-7.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-    {
-      fileName: 'exemplo-8.png',
-      imagePath: 'assets/images/image-ressonancia.png',
-      label: 'Amostra saudável',
-      source: 'ADNI',
-      diagnosis: 'Diagnosticado clinicamente como Normal controlado',
-    },
-  ];
+  constructor() {
+    this.samplesService
+      .list()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (samples) => {
+          this.samples.set(samples);
+          this.samplesState.set('ready');
+        },
+        error: () => this.samplesState.set('error'),
+      });
+  }
 
   // Divide as amostras em páginas de 4 em 4 para o carrossel
-  protected readonly pages = computed<DownloadSample[][]>(() => {
-    const chunks: DownloadSample[][] = [];
-    for (let i = 0; i < this.samples.length; i += this.itemsPerPage) {
-      chunks.push(this.samples.slice(i, i + this.itemsPerPage));
+  protected readonly pages = computed<Sample[][]>(() => {
+    const chunks: Sample[][] = [];
+    const samples = this.samples();
+    for (let i = 0; i < samples.length; i += this.itemsPerPage) {
+      chunks.push(samples.slice(i, i + this.itemsPerPage));
     }
     return chunks;
   });
@@ -111,38 +67,26 @@ export class Downloads {
     this.currentPage.set(index);
   }
 
-  protected requestConsent(file: File | null = null): void {
-    this.pendingInferenceFile = file;
-    this.consentOpen.set(true);
+  protected thumbnailUrl(sample: Sample): string {
+    return this.samplesService.thumbnailUrl(sample.id);
   }
 
-  protected acceptConsent(): void {
-    this.consentOpen.set(false);
-    this.initialInferenceFile.set(this.pendingInferenceFile);
-    this.inferenceModalOpen.set(true);
-    this.pendingInferenceFile = null;
+  protected clinicalLabel(sample: Sample): string {
+    return (
+      DIAGNOSTICO_CLINICO[sample.diagnostico_clinico ?? ''] ??
+      sample.diagnostico_clinico ??
+      'não informado'
+    );
   }
 
-  protected closeConsent(): void {
-    this.consentOpen.set(false);
-    this.pendingInferenceFile = null;
+  // Amostras abrem a análise direto; o termo só aparece quando o usuário envia o próprio exame
+  protected analyzeSample(sample: Sample): void {
+    this.handoff.queue({ kind: 'sample', sample });
+    void this.router.navigate(['/analise']);
   }
 
-  protected closeInferenceModal(): void {
-    this.inferenceModalOpen.set(false);
-    this.initialInferenceFile.set(null);
-  }
-
-  protected async loadExampleImage(sample: DownloadSample): Promise<void> {
-    try {
-      const response = await fetch(sample.imagePath);
-      const blob = await response.blob();
-      const file = new File([blob], sample.fileName, { type: blob.type });
-      this.requestConsent(file);
-    } catch (e) {
-      console.error('Failed to load example image', e);
-      // Open modal anyway so user can upload manually if they want
-      this.requestConsent(null);
-    }
+  protected uploadOwn(): void {
+    this.handoff.queue(null);
+    void this.router.navigate(['/analise']);
   }
 }

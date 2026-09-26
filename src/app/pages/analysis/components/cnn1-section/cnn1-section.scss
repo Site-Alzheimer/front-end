@@ -1,0 +1,129 @@
+.intro {
+  max-width: 72ch;
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--color-text-2);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0 0 16px;
+}
+
+.stat {
+  padding: 14px 18px;
+
+  & + & {
+    border-left: 1px solid var(--color-border);
+  }
+
+  dt {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+
+    small {
+      margin-left: 6px;
+      font-size: 0.76rem;
+      font-weight: 400;
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.ui-alert {
+  margin: 0 0 16px;
+}
+
+// Visualizador e gráfico na mesma altura (o visualizador estica até o fim da linha)
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.chart {
+  padding: 16px 18px 14px;
+}
+
+.legend {
+  margin: 12px 0 2px;
+}
+
+.key {
+  display: inline-block;
+
+  &--band {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--chart-band);
+    outline: 1px solid var(--chart-axis);
+  }
+  &--line {
+    width: 14px;
+    border-top: 1px solid var(--color-text-2);
+  }
+  &--dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--series-ink);
+  }
+  &--cursor {
+    width: 2px;
+    height: 12px;
+    background: var(--color-primary);
+  }
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0 0;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.readout {
+  font-size: 0.82rem;
+  color: var(--color-text-2);
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1080px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .stat:nth-child(4) {
+    border-left: 0;
+  }
+  .stat:nth-child(n + 4) {
+    border-top: 1px solid var(--color-border);
+  }
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

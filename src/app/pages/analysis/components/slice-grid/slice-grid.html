@@ -1,0 +1,77 @@
+<ng-template #tile let-s let-big="big">
+  <button
+    type="button"
+    class="tile"
+    [class.tile--big]="big"
+    [class.is-highlight]="highlighted() === s.k"
+    [attr.aria-label]="
+      'Fatia ' + label(s) + ', índice ' + s.index + ', probabilidade de DA ' + fmt(s.p)
+    "
+    (pointerenter)="focus(s)"
+    (pointerleave)="focus(null)"
+    (focus)="focus(s)"
+    (blur)="focus(null)"
+  >
+    <span class="tile__img">
+      @if (sprite(); as sp) {
+        <span
+          class="tile__sprite"
+          [style.background-size]="size()"
+          [style.background-position]="position(s)"
+          [style.transform]="asCnnSees() ? 'none' : sp.transform"
+        ></span>
+        @if (heat(); as mapas) {
+          <img
+            class="tile__heat"
+            [src]="mapas[s.k]"
+            alt=""
+            [style.transform]="asCnnSees() ? 'none' : sp.transform"
+            [style.opacity]="heatOpacity()"
+          />
+        }
+      } @else {
+        <span class="tile__empty">f.{{ s.index }}</span>
+      }
+    </span>
+    <span class="tile__label ui-num">
+      <span
+        >{{ label(s) }}
+        @if (big) {
+          · fatia {{ s.index }}
+        }
+      </span>
+      <i class="tile__vote" [class.tile__vote--ad]="s.p > 0.5"></i>
+      <b>{{ big ? fmt(s.p, 4) : shortP(s.p) }}</b>
+    </span>
+  </button>
+</ng-template>
+
+<div class="grid" [style.--sprite]="sprite() ? 'url(' + sprite()!.url + ')' : null">
+  <p class="grid__group">Posteriores <small>−9 a −1</small></p>
+  <div class="grid__row">
+    @for (s of posterior(); track s.k) {
+      <ng-container *ngTemplateOutlet="tile; context: { $implicit: s, big: false }" />
+    }
+  </div>
+
+  <div class="grid__center">
+    <ng-container *ngTemplateOutlet="tile; context: { $implicit: center(), big: true }" />
+    <dl class="grid__info ui-num">
+      <dt>Índice</dt>
+      <dd>{{ center().index }}</dd>
+      <dt>P(DA)</dt>
+      <dd>{{ fmt(center().p, 4) }}</dd>
+      <dt>Voto</dt>
+      <dd>{{ center().p > 0.5 ? 'DA' : 'Normal' }}</dd>
+      <dt>Entrada</dt>
+      <dd>176 × 176 px</dd>
+    </dl>
+  </div>
+
+  <p class="grid__group">Anteriores <small>+1 a +9</small></p>
+  <div class="grid__row">
+    @for (s of anterior(); track s.k) {
+      <ng-container *ngTemplateOutlet="tile; context: { $implicit: s, big: false }" />
+    }
+  </div>
+</div>

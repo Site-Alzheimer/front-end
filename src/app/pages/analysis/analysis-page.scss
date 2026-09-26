@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  min-height: calc(100vh - 72px);
+}
+
+.error {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  max-width: 60ch;
+  padding: 56px 0;
+
+  h1 {
+    margin: 6px 0 0;
+    font: 700 1.5rem var(--font-display);
+  }
+  p {
+    margin: 0;
+    color: var(--color-text-2);
+  }
+}
+
+.error__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fdf1f1;
+  color: var(--critical);
+  font-size: 1.3rem;
+}
+
+.error__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}

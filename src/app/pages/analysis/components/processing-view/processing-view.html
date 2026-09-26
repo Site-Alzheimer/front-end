@@ -1,0 +1,56 @@
+<header class="ui-page-head">
+  <h1>Analisando o exame</h1>
+  <p>
+    <span class="file">{{ store.fileName() }}</span>
+    <span class="status" aria-live="polite">{{ store.status() }}</span>
+  </p>
+</header>
+
+<div class="layout">
+  <ol class="ui-card steps">
+    @for (s of steps(); track s.key) {
+      <li class="step" [attr.data-state]="s.state">
+        <span class="step__mark">
+          @if (s.state === 'done') {
+            <app-icon name="check" />
+          }
+          @if (s.state === 'active') {
+            <app-icon name="loader-2" class="is-spinning" />
+          }
+        </span>
+        <div>
+          <div class="step__name">{{ s.name }}</div>
+          @if (s.detail) {
+            <div class="step__detail ui-num">{{ s.detail }}</div>
+          }
+          @if (s.fraction !== null) {
+            <div class="step__bar"><i [style.width.%]="s.fraction * 100"></i></div>
+          }
+        </div>
+      </li>
+    }
+    <li class="steps__cancel">
+      <button type="button" class="ui-button ui-button--small" (click)="store.reset()">
+        Cancelar
+      </button>
+    </li>
+  </ol>
+
+  <div class="viz">
+    <app-mri-viewer
+      [volume]="store.volume()"
+      [volumeState]="store.volumeState()"
+      [volumeError]="store.volumeError()"
+      [cursor]="cursor"
+    />
+    <div class="ui-card chart">
+      <p class="ui-card-title">Varredura da CNN1 <small>score de cada fatia coronal</small></p>
+      <app-sagittal-locator [volume]="store.volume()" [n]="scores().length" [cursor]="cursor" />
+      <app-roi-chart [scores]="scores()" [cursor]="cursor" />
+      <p class="axis"><span>← posterior</span><span>anterior →</span></p>
+      @if (!store.liveProgress()) {
+        <p class="offline">Sem progresso ao vivo nesta conexão; o resultado chega ao final.</p>
+      }
+    </div>
+  </div>
+</div>
