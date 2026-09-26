@@ -1,3 +1,5 @@
+@use 'styles/ui';
+
 :root {
   // Brand
   --color-primary: #2B8CEE;
@@ -21,6 +23,42 @@
 
   // Layout
   --max-width: 1240px;
+  --radius: 8px;
+  --radius-lg: 14px;
+
+  // Texto e superfícies do painel de análise
+  --color-primary-ink: #1a63c2;
+  --color-surface-2: #f7f8fa;
+  --color-text-2: #3b414d;
+  --color-border-2: #d3d7de;
+
+  // Séries dos gráficos (validadas contra daltonismo; nunca usadas como cor de texto)
+  --series-normal: #2a78d6;
+  --series-ad: #eb6834;
+  --series-ink: #2d3340;
+  --chart-grid: #eceef2;
+  --chart-axis: #c3c8d0;
+  --chart-band: rgba(20, 23, 31, 0.06);
+
+  // Status (sempre com ícone e texto)
+  --warning-bg: #fff6e0;
+  --warning-border: #f1c35c;
+  --warning-text: #6a4a00;
+  --critical: #d03b3b;
+  --good: #0f7a2f;
+
+  // Visualizador de RM (fundo escuro por motivo funcional)
+  --viewer-bg: #0e1014;
+  --viewer-bg-2: #181b21;
+  --viewer-border: #262a32;
+  --viewer-text: #c8ccd4;
+  --viewer-muted: #7d838f;
+  --crop-cnn1: rgba(236, 239, 244, 0.85);
+  --crop-cnn2: #6fb1ff;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 * {
@@ -65,4 +103,18 @@ button {
     animation: none !important;
     transition: none !important;
   }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

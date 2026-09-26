@@ -1,0 +1,280 @@
+// Peças de interface compartilhadas pela rota /analise (globais para não pesar no
+// budget de estilo de cada componente). Só classes com prefixo "ui-".
+// Mesma linguagem da página inicial: Sora nos títulos, Inter no resto, botões em pílula.
+
+.ui-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+// Cabeçalho de página (envio, processamento e resultado)
+.ui-page-head {
+  padding: 36px 0 24px;
+
+  h1 {
+    margin: 0;
+    font: 700 clamp(1.5rem, 2.4vw, 1.9rem) / 1.2 var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    max-width: 68ch;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+}
+
+// Números que se alinham em coluna (tabelas, eixos, contadores)
+.ui-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1px solid var(--color-border-2);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-muted);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 6px 16px -8px rgba(37, 99, 235, 0.6);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-primary-dark);
+      background: var(--color-primary-dark);
+    }
+  }
+
+  &--small {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+  }
+}
+
+.ui-alert {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  font-size: 0.86rem;
+
+  strong {
+    color: #4a3300;
+  }
+
+  app-icon {
+    margin-top: 2px;
+  }
+
+  &--critical {
+    border-color: #f0b4b4;
+    background: #fdf1f1;
+    color: #7a1f1f;
+
+    strong {
+      color: #5c1414;
+    }
+  }
+}
+
+.ui-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  &--ad {
+    background: var(--series-ad);
+  }
+
+  &--normal {
+    background: var(--series-normal);
+  }
+}
+
+.ui-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 0.78rem;
+  color: var(--color-text-2);
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+// Título pequeno dentro de um cartão, com uma dica opcional ao lado
+.ui-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+
+  small {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+}
+
+.ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  th,
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    font-weight: 600;
+  }
+
+  td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  tr.is-highlight td {
+    background: #f1f7fe;
+  }
+}
+
+.ui-data {
+  margin-top: 12px;
+  font-size: 0.84rem;
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-primary-ink);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .ui-data__scroll {
+    max-height: 240px;
+    margin-top: 8px;
+    overflow: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+}
+
+svg.ui-chart {
+  display: block;
+  width: 100%;
+  overflow: visible;
+  touch-action: none;
+
+  text {
+    font: 11px var(--font-body);
+    font-variant-numeric: tabular-nums;
+    fill: var(--color-text-muted);
+  }
+
+  text.value {
+    fill: var(--color-text-2);
+    font-weight: 500;
+    paint-order: stroke;
+    stroke: var(--color-surface);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+}
+
+.ui-tooltip {
+  position: fixed;
+  z-index: 100;
+  max-width: 240px;
+  padding: 8px 11px;
+  border-radius: var(--radius);
+  background: var(--color-text);
+  color: #fff;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transition: opacity 0.08s;
+
+  &.is-visible {
+    opacity: 1;
+  }
+
+  .v {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .l {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #b9bfca;
+  }
+
+  .l i {
+    display: inline-block;
+    width: 10px;
+    border-top: 2px solid;
+  }
+}
+
+.is-spinning {
+  animation: ui-spin 1s linear infinite;
+}
+
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
