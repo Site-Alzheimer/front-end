@@ -45,3 +45,6 @@ Thumbs.db
 
 # Contexto local da plataforma (não versionado)
 CLAUDE.md
+
+# Protótipo e documentos locais (não versionados)
+/docs/
