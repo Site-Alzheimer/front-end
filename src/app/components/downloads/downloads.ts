@@ -25,6 +25,10 @@ export class Downloads {
   protected readonly itemsPerPage = 4;
   protected readonly samples = signal<Sample[]>([]);
   protected readonly samplesState = signal<'loading' | 'ready' | 'error'>('loading');
+  // Servidor sem amostras (site público sem exames com licença aberta): a seção vira só o envio
+  protected readonly showSamples = computed(
+    () => !(this.samplesState() === 'ready' && this.samples().length === 0),
+  );
 
   constructor() {
     this.samplesService
