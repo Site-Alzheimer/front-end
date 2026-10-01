@@ -172,6 +172,19 @@ function toAnalysisError(err: unknown): AnalysisError {
       return new AnalysisError('format', detalhe || 'O arquivo não pôde ser analisado.');
     if (err.status === 503)
       return new AnalysisError('starting', 'O servidor está iniciando e carregando os modelos.');
+    // Respostas do nginx do servidor, antes de chegar à API
+    if (err.status === 413)
+      return new AnalysisError('format', 'O arquivo passa do limite de 100 MB do servidor.');
+    if (err.status === 429)
+      return new AnalysisError(
+        'server',
+        'Muitas análises seguidas a partir da sua conexão. Aguarde um minuto e tente de novo.',
+      );
+    if (err.status === 502 || err.status === 504)
+      return new AnalysisError(
+        'server',
+        'O serviço de análise não respondeu. Tente de novo em instantes.',
+      );
     return new AnalysisError('server', detalhe || `Erro no servidor (${err.status}).`);
   }
   return new AnalysisError('server', err instanceof Error ? err.message : 'Erro inesperado.');
