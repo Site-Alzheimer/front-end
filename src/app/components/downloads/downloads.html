@@ -1,105 +1,109 @@
 <section class="downloads" id="diagnostico">
   <div class="container">
-    <h2 class="downloads__heading">Selecione um dos nossos exames de exemplo:</h2>
+    @if (!showSamples()) {
+      <h2 class="downloads__heading">Analise a sua ressonância magnética:</h2>
+    } @else {
+      <h2 class="downloads__heading">Selecione um dos nossos exames de exemplo:</h2>
 
-    @switch (samplesState()) {
-      @case ('loading') {
-        <p class="downloads__status">Carregando os exames de exemplo…</p>
-      }
-      @case ('error') {
-        <p class="downloads__status">
-          Os exames de exemplo estão indisponíveis agora. Você ainda pode enviar o seu próprio
-          exame.
-        </p>
-      }
-      @default {
-        @if (samples().length === 0) {
-          <p class="downloads__status">Nenhum exame de exemplo disponível no servidor.</p>
-        } @else {
-          <div class="carousel">
-            @if (totalPages() > 1) {
-              <button
-                type="button"
-                class="carousel__nav carousel__nav--prev"
-                (click)="prev()"
-                aria-label="Amostras anteriores"
-              >
-                <app-icon name="chevron-left" />
-              </button>
-            }
-
-            <div class="carousel__viewport">
-              <div
-                class="carousel__track"
-                [style.transform]="'translateX(-' + currentPage() * 100 + '%)'"
-              >
-                @for (page of pages(); track $index) {
-                  <div class="carousel__page downloads__grid">
-                    @for (sample of page; track sample.id) {
-                      <article class="sample-card">
-                        <div class="sample-card__image">
-                          @if (sample.tem_miniatura) {
-                            <img
-                              [src]="thumbnailUrl(sample)"
-                              [alt]="'Corte coronal de ' + sample.rotulo"
-                              loading="lazy"
-                            />
-                          }
-                        </div>
-
-                        <div class="sample-card__body">
-                          <p class="sample-card__text">
-                            <strong>{{ sample.rotulo }}</strong
-                            ><br />
-                            <strong>Fonte:</strong> {{ sample.fonte }}<br />
-                            Diagnóstico clínico: {{ clinicalLabel(sample) }}
-                          </p>
-                          @if (sample.licenca) {
-                            <p class="sample-card__license">{{ sample.licenca }}</p>
-                          }
-
-                          <button class="sample-card__button" (click)="analyzeSample(sample)">
-                            Analisar este exemplo
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-
-            @if (totalPages() > 1) {
-              <button
-                type="button"
-                class="carousel__nav carousel__nav--next"
-                (click)="next()"
-                aria-label="Próximas amostras"
-              >
-                <app-icon name="chevron-right" />
-              </button>
-            }
-          </div>
-
-          @if (totalPages() > 1) {
-            <div class="carousel__dots">
-              @for (page of pages(); track $index) {
+      @switch (samplesState()) {
+        @case ('loading') {
+          <p class="downloads__status">Carregando os exames de exemplo…</p>
+        }
+        @case ('error') {
+          <p class="downloads__status">
+            Os exames de exemplo estão indisponíveis agora. Você ainda pode enviar o seu próprio
+            exame.
+          </p>
+        }
+        @default {
+          @if (samples().length > 0) {
+            <div class="carousel">
+              @if (totalPages() > 1) {
                 <button
                   type="button"
-                  class="carousel__dot"
-                  [class.carousel__dot--active]="currentPage() === $index"
-                  (click)="goTo($index)"
-                  [attr.aria-label]="'Ir para página ' + ($index + 1)"
-                ></button>
+                  class="carousel__nav carousel__nav--prev"
+                  (click)="prev()"
+                  aria-label="Amostras anteriores"
+                >
+                  <app-icon name="chevron-left" />
+                </button>
+              }
+
+              <div class="carousel__viewport">
+                <div
+                  class="carousel__track"
+                  [style.transform]="'translateX(-' + currentPage() * 100 + '%)'"
+                >
+                  @for (page of pages(); track $index) {
+                    <div class="carousel__page downloads__grid">
+                      @for (sample of page; track sample.id) {
+                        <article class="sample-card">
+                          <div class="sample-card__image">
+                            @if (sample.tem_miniatura) {
+                              <img
+                                [src]="thumbnailUrl(sample)"
+                                [alt]="'Corte coronal de ' + sample.rotulo"
+                                loading="lazy"
+                              />
+                            }
+                          </div>
+
+                          <div class="sample-card__body">
+                            <p class="sample-card__text">
+                              <strong>{{ sample.rotulo }}</strong
+                              ><br />
+                              <strong>Fonte:</strong> {{ sample.fonte }}<br />
+                              Diagnóstico clínico: {{ clinicalLabel(sample) }}
+                            </p>
+                            @if (sample.licenca) {
+                              <p class="sample-card__license">{{ sample.licenca }}</p>
+                            }
+
+                            <button class="sample-card__button" (click)="analyzeSample(sample)">
+                              Analisar este exemplo
+                            </button>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (totalPages() > 1) {
+                <button
+                  type="button"
+                  class="carousel__nav carousel__nav--next"
+                  (click)="next()"
+                  aria-label="Próximas amostras"
+                >
+                  <app-icon name="chevron-right" />
+                </button>
               }
             </div>
+
+            @if (totalPages() > 1) {
+              <div class="carousel__dots">
+                @for (page of pages(); track $index) {
+                  <button
+                    type="button"
+                    class="carousel__dot"
+                    [class.carousel__dot--active]="currentPage() === $index"
+                    (click)="goTo($index)"
+                    [attr.aria-label]="'Ir para página ' + ($index + 1)"
+                  ></button>
+                }
+              </div>
+            }
           }
         }
       }
     }
 
     <div class="downloads__upload-section">
-      <span class="downloads__separator">ou</span>
+      @if (showSamples()) {
+        <span class="downloads__separator">ou</span>
+      }
       <button class="downloads__upload-button" (click)="uploadOwn()">
         Carregue uma imagem sua!
       </button>

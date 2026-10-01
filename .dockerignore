@@ -1,0 +1,11 @@
+node_modules
+dist
+.angular
+.git
+.github
+.vscode
+docs
+coverage
+CLAUDE.md
+Dockerfile
+*.log

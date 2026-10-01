@@ -48,40 +48,41 @@
     </ul>
   </div>
 
-  <section class="samples">
-    <h2>Ou use um exame de exemplo</h2>
-    <p>Processado no servidor a partir da cópia dele, sem precisar enviar nada.</p>
-    <div class="ui-card">
-      @if (samples() === null) {
-        <p class="samples__empty">Carregando…</p>
-      } @else if (samples()!.length === 0) {
-        <p class="samples__empty">Nenhum exame de exemplo disponível agora.</p>
-      } @else {
-        @for (s of samples()!; track s.id) {
-          <div class="sample">
-            <span class="sample__thumb">
-              @if (s.tem_miniatura) {
-                <img [src]="thumbnail(s)" alt="" loading="lazy" />
-              }
-            </span>
-            <span>
-              <span class="sample__name">{{ s.arquivo }}</span>
-              <span class="sample__meta">{{ s.fonte }} · {{ sizeMb(s.tamanho_bytes) }} MB</span>
-              <span class="sample__clinical">
-                <i
-                  class="ui-key"
-                  [class.ui-key--ad]="s.diagnostico_clinico === 'AD'"
-                  [class.ui-key--normal]="s.diagnostico_clinico !== 'AD'"
-                ></i>
-                Diagnóstico clínico: {{ clinical(s) }}
+  <!-- Sem amostras no servidor (site público sem exames com licença aberta), a seção não aparece -->
+  @if (samples()?.length !== 0) {
+    <section class="samples">
+      <h2>Ou use um exame de exemplo</h2>
+      <p>Processado no servidor a partir da cópia dele, sem precisar enviar nada.</p>
+      <div class="ui-card">
+        @if (samples() === null) {
+          <p class="samples__empty">Carregando…</p>
+        } @else {
+          @for (s of samples()!; track s.id) {
+            <div class="sample">
+              <span class="sample__thumb">
+                @if (s.tem_miniatura) {
+                  <img [src]="thumbnail(s)" alt="" loading="lazy" />
+                }
               </span>
-            </span>
-            <button type="button" class="ui-button ui-button--small" (click)="useSample(s)">
-              Analisar
-            </button>
-          </div>
+              <span>
+                <span class="sample__name">{{ s.arquivo }}</span>
+                <span class="sample__meta">{{ s.fonte }} · {{ sizeMb(s.tamanho_bytes) }} MB</span>
+                <span class="sample__clinical">
+                  <i
+                    class="ui-key"
+                    [class.ui-key--ad]="s.diagnostico_clinico === 'AD'"
+                    [class.ui-key--normal]="s.diagnostico_clinico !== 'AD'"
+                  ></i>
+                  Diagnóstico clínico: {{ clinical(s) }}
+                </span>
+              </span>
+              <button type="button" class="ui-button ui-button--small" (click)="useSample(s)">
+                Analisar
+              </button>
+            </div>
+          }
         }
-      }
-    </div>
-  </section>
+      </div>
+    </section>
+  }
 </div>
