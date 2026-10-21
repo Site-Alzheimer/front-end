@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ChartTooltip } from '../../chart-tooltip';
-import { fmt, niceTicks, svgEl, svgText } from '../../chart-utils';
+import { fmt, svgEl, svgText } from '../../chart-utils';
 import { ScanCursor } from '../../scan-cursor';
 import { ROI_MARGIN } from '../chart-margin';
 
@@ -19,7 +19,10 @@ const H = 210;
 const TOP = 14;
 const BOTTOM = 26;
 
-/** Score da CNN1 por fatia coronal (linha única), com limiar, janela, fatia central e cursor. */
+/**
+ * Score da CNN1 por fatia coronal (linha única), com limiar, janela, fatia central e cursor.
+ * Como o gráfico do notebook do professor: fatia 0 (anterior) à esquerda, y de 0 a 110 e a janela em vermelho.
+ */
 @Component({
   selector: 'app-roi-chart',
   template: `<svg #svg class="ui-chart" [attr.height]="height"></svg>`,
@@ -31,7 +34,7 @@ const BOTTOM = 26;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoiChart {
-  /** Na ordem canônica; NaN = ainda não calculado (varredura ao vivo). */
+  /** Na ordem do notebook (0 = anterior); NaN = ainda não calculado (varredura ao vivo). */
   readonly scores = input.required<number[]>();
   readonly window = input<[number, number] | null>(null);
   readonly central = input<number | null>(null);
@@ -80,8 +83,10 @@ export class RoiChart {
     const plotW = W - ROI_MARGIN.left - ROI_MARGIN.right;
     const plotH = H - TOP - BOTTOM;
     const finitos = scores.filter(Number.isFinite);
-    const ticks = niceTicks((finitos.length ? Math.max(...finitos) : 1) * 1.04);
-    const yMax = ticks[ticks.length - 1];
+    // eixo y fixo, como na célula 11 do notebook: 0 a 110, ou até o pico + 10 se ele passar disso
+    const yMax = Math.max(110, (finitos.length ? Math.max(...finitos) : 0) + 10);
+    const passo = yMax <= 150 ? 25 : 50;
+    const ticks = Array.from({ length: Math.floor(yMax / passo) + 1 }, (_, k) => k * passo);
     const x = (this.x = (i: number) => ROI_MARGIN.left + ((i + 0.5) / n) * plotW);
     const y = (v: number) => TOP + plotH - (Math.max(0, Math.min(yMax, v)) / yMax) * plotH;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -103,17 +108,11 @@ export class RoiChart {
     for (let t = 0; t < n; t += 32)
       svgText(svg, x(t), H - 8, String(t), { 'text-anchor': 'middle' });
     if (win) {
-      svgEl(
-        'rect',
-        {
-          x: x(win[0]) - plotW / n / 2,
-          y: TOP,
-          width: ((win[1] - win[0] + 1) * plotW) / n,
-          height: plotH,
-          fill: 'var(--chart-band)',
-        },
-        svg,
-      );
+      const x0 = x(win[0]) - plotW / n / 2;
+      const x1 = x0 + ((win[1] - win[0] + 1) * plotW) / n;
+      svgEl('rect', { x: x0, y: TOP, width: x1 - x0, height: plotH, fill: 'var(--roi-band)' }, svg);
+      for (const xb of [x0, x1])
+        svgEl('line', { x1: xb, x2: xb, y1: TOP, y2: TOP + plotH, stroke: 'var(--roi-band-edge)' }, svg);
     }
     if (threshold != null) {
       svgEl(

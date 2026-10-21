@@ -39,6 +39,11 @@
   --chart-grid: #eceef2;
   --chart-axis: #c3c8d0;
   --chart-band: rgba(20, 23, 31, 0.06);
+  // janela da CNN1 em vermelho, como no gráfico do notebook do professor
+  --roi-band: rgba(214, 40, 40, 0.12);
+  --roi-band-edge: #d62828;
+  --roi-band-dark: rgba(240, 80, 80, 0.22);
+  --roi-band-edge-dark: rgba(240, 80, 80, 0.8);
 
   // Status (sempre com ícone e texto)
   --warning-bg: #fff6e0;
