@@ -59,16 +59,18 @@ export class MriViewer {
       const cursor = this.cursor();
       this.image = null;
       if (!v) return;
-      onCleanup(cursor.listen((j) => this.draw(v, j)));
+      onCleanup(cursor.listen((i) => this.draw(v, i)));
     });
     afterRenderEffect(() =>
       this.drawCrops(this.volume(), this.crops(), this.showCnn1(), this.showCnn2()),
     );
   }
 
-  private draw(v: DecodedVolume, j: number): void {
+  /** `i`: índice do notebook (0 = anterior); no volume canônico (y cresce para A) é ny − 1 − i. */
+  private draw(v: DecodedVolume, i: number): void {
     const [nx, ny, nz] = v.dims;
-    const y = Math.max(0, Math.min(ny - 1, j));
+    const fatia = Math.max(0, Math.min(ny - 1, i));
+    const y = ny - 1 - fatia;
     const canvas = this.canvas().nativeElement;
     if (canvas.width !== nx || canvas.height !== nz) {
       canvas.width = nx;
@@ -86,7 +88,7 @@ export class MriViewer {
       for (let x = 0; x < nx; x++) px[dst + x] = LUT[v.voxels[src + x]];
     }
     ctx.putImageData(img, 0, 0);
-    this.label().nativeElement.textContent = String(y);
+    this.label().nativeElement.textContent = String(fatia);
   }
 
   private drawCrops(

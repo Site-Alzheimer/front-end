@@ -64,8 +64,8 @@
     width: 10px;
     height: 10px;
     border-radius: 2px;
-    background: var(--chart-band);
-    outline: 1px solid var(--chart-axis);
+    background: var(--roi-band);
+    outline: 1px solid var(--roi-band-edge);
   }
   &--line {
     width: 14px;

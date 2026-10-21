@@ -11,7 +11,10 @@ import { DecodedVolume } from '../../volume/volume-decoder';
 import { ScanCursor } from '../../scan-cursor';
 import { ROI_MARGIN, sliceLeft, sliceWidth } from '../chart-margin';
 
-/** Corte sagital médio com a janela da CNN1 e o cursor, alinhado ao eixo do gráfico. */
+/**
+ * Corte sagital médio com a janela da CNN1 e o cursor, alinhado ao eixo do gráfico: a coluna i é a
+ * fatia i do notebook (0 = anterior, rosto à esquerda).
+ */
 @Component({
   selector: 'app-sagittal-locator',
   template: `
@@ -73,9 +76,10 @@ export class SagittalLocator {
     const px = img.data;
     for (let r = 0; r < nz; r++) {
       const z = nz - 1 - r;
-      for (let y = 0; y < ny; y++) {
+      for (let i = 0; i < ny; i++) {
+        const y = ny - 1 - i; // y canônico cresce para anterior
         const g = v.voxels[x + nx * (z + nz * y)];
-        const o = (r * ny + y) * 4;
+        const o = (r * ny + i) * 4;
         px[o] = px[o + 1] = px[o + 2] = g;
         px[o + 3] = 255;
       }

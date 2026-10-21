@@ -36,13 +36,31 @@ function resposta(extra: Partial<PredictionResponse> = {}): PredictionResponse {
 }
 
 describe('toView', () => {
-  it('mantém os índices canônicos (P→A) e ordena as fatias anatomicamente', () => {
-    const v = toView(resposta());
+  it('usa os índices do notebook (0 = anterior) quando a API analisa em IPL', () => {
+    const v = toView(
+      resposta({
+        metadados_nifti: { dimensoes: [10, 10, 10], espacamento: [1, 1, 1], orientacao_analise: 'IPL' },
+      }),
+    );
     expect(v.central).toBe(7);
     expect(v.window).toEqual([6, 8]);
+    expect(v.scores[9]).toBe(9);
     expect(v.slices[0].offset).toBeLessThanOrEqual(v.slices[18].offset);
-    // offset +9 da API (k = 0) fica na borda anterior, limitado ao volume
-    expect(v.slices.find((s) => s.k === 0)?.index).toBe(9);
+    // offset +9 da API (k = 0) é posterior no IPL: índice limitado ao volume e deslocamento anatômico negativo
+    const k0 = v.slices.find((s) => s.k === 0)!;
+    expect(k0.index).toBe(9);
+    expect(k0.offset).toBe(-2);
     expect(v.votes).toBe(1);
+  });
+
+  it('converte as respostas antigas (volume canônico, 0 = posterior) para o índice do notebook', () => {
+    const v = toView(resposta());
+    expect(v.central).toBe(2);
+    expect(v.window).toEqual([1, 3]);
+    expect(v.scores[0]).toBe(9);
+    // offset +9 da API antiga (k = 0) era anterior: vira a fatia 0, deslocamento +2
+    const k0 = v.slices.find((s) => s.k === 0)!;
+    expect(k0.index).toBe(0);
+    expect(k0.offset).toBe(2);
   });
 });

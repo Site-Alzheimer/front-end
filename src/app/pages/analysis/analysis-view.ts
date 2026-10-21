@@ -5,7 +5,7 @@ const OFFSETS = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -
 export interface SliceEntry {
   /** Posição no lote (mesma ordem das predições e do sprite). */
   k: number;
-  /** Índice coronal canônico (0 = posterior). */
+  /** Índice coronal do notebook (0 = anterior). */
   index: number;
   /** Deslocamento anatômico em relação à central (+ = anterior), como na Fig. 5.15 da tese. */
   offset: number;
@@ -20,7 +20,10 @@ export interface AnalysisView {
   cvClass: CvClass;
   votes: number;
   meanDecision: 'ALZHEIMER' | 'NORMAL';
-  /** Nº de fatias coronais; todos os índices abaixo estão no espaço canônico. */
+  /**
+   * Nº de fatias coronais. Todos os índices abaixo são os do notebook do professor (volume IPL,
+   * 0 = anterior); no volume canônico do visualizador, a fatia i é a n − 1 − i.
+   */
   n: number;
   scores: number[];
   window: [number, number];
@@ -80,22 +83,29 @@ export function toView(r: PredictionResponse): AnalysisView {
   const stats = r.estatisticas_predicao;
   const n = cnn1.roi_scores.length;
 
-  const scores = cnn1.roi_scores;
-  const scoreMax = cnn1.score_max ?? Math.max(...cnn1.roi_scores);
+  // A API até a etapa 8 usava o volume canônico (0 = posterior): converte para o índice do notebook
+  const doNotebook = r.metadados_nifti.orientacao_analise === 'IPL';
+  const ap = (j: number) => (doNotebook ? j : n - 1 - j);
+
+  const scores = doNotebook ? cnn1.roi_scores : [...cnn1.roi_scores].reverse();
+  const scoreMax = cnn1.score_max ?? Math.max(...scores);
   const threshold = cnn1.limiar ?? 0.8 * scoreMax;
-  const central = cnn1.slice_central;
+  const central = ap(cnn1.slice_central);
   const offsets = cnn2.offsets ?? OFFSETS;
-  const rawIndices =
-    cnn2.indices ?? offsets.map((o) => Math.max(0, Math.min(n - 1, cnn1.slice_central + o)));
+  const indices = (
+    cnn2.indices ?? offsets.map((o) => Math.max(0, Math.min(n - 1, cnn1.slice_central + o)))
+  ).map(ap);
   const preds = stats.predicoes_19_slices;
 
-  const slices = rawIndices
-    .map((j, k) => ({ k, index: j, offset: j - central, p: preds[k] }))
+  // deslocamento anatômico: + = anterior, isto é, índice menor que o da central
+  const slices = indices
+    .map((i, k) => ({ k, index: i, offset: central - i, p: preds[k] }))
     .sort((a, b) => a.offset - b.offset || a.k - b.k);
 
   const mean = preds.reduce((s, p) => s + p, 0) / preds.length;
   const votes = stats.votos_alzheimer ?? preds.filter((p) => p > 0.5).length;
-  const window: [number, number] = [cnn1.limite_inferior, cnn1.limite_superior];
+  const limites = [ap(cnn1.limite_inferior), ap(cnn1.limite_superior)];
+  const window: [number, number] = [Math.min(...limites), Math.max(...limites)];
   const img = r.imagens;
 
   return {
@@ -112,8 +122,8 @@ export function toView(r: PredictionResponse): AnalysisView {
     central,
     threshold,
     scoreMax,
-    indexMax: cnn1.indice_max ?? cnn1.roi_scores.indexOf(scoreMax),
-    aboveThreshold: cnn1.roi_scores.filter((s) => s >= threshold).length,
+    indexMax: cnn1.indice_max != null ? ap(cnn1.indice_max) : scores.indexOf(scoreMax),
+    aboveThreshold: scores.filter((s) => (doNotebook ? s > threshold : s >= threshold)).length,
     fallback: cnn1.fallback ?? false,
     slices,
     crops: { cnn1: cnn1.recorte, cnn2: cnn2.recorte },

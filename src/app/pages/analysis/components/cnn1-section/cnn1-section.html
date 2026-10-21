@@ -1,8 +1,9 @@
 @let v = view();
 <p class="intro">
   A primeira rede avalia cada uma das {{ v.n }} fatias coronais do volume e dá a cada uma um score
-  de presença da região do hipocampo. As fatias com score de pelo menos 80% do máximo formam a
-  janela; o centro da janela é a fatia em torno da qual a segunda rede vai trabalhar.
+  de presença da região do hipocampo. As fatias com score acima de 80% do máximo formam a janela
+  (sem vales abaixo do limiar); o centro da janela é a fatia em torno da qual a segunda rede vai
+  trabalhar. A fatia 0 é a mais anterior, como no código de referência.
 </p>
 
 <dl class="ui-card stats">
@@ -17,7 +18,7 @@
     <dd>{{ fmt(v.threshold, 2) }}</dd>
   </div>
   <div class="stat">
-    <dt>Fatias no limiar</dt>
+    <dt>Acima do limiar</dt>
     <dd>
       {{ v.aboveThreshold }}<small>de {{ v.n }}</small>
     </dd>
@@ -71,7 +72,7 @@
       [cursor]="cursor()"
       [interactive]="true"
     />
-    <p class="axis"><span>← posterior</span><span>anterior →</span></p>
+    <p class="axis"><span>← anterior</span><span>posterior →</span></p>
     <div class="controls">
       <button type="button" class="ui-button ui-button--small" (click)="toggle()">
         <app-icon [name]="playing() ? 'player-pause' : 'player-play'" />{{

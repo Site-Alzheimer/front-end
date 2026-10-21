@@ -72,7 +72,7 @@ export class ProcessingView {
     effect(() => {
       const { done, total } = this.store.cnn1();
       if (!total) return;
-      // a varredura vai da fatia mais posterior (0) para a mais anterior
+      // a varredura vai da fatia mais anterior (0) para a mais posterior, como no notebook
       this.started = true;
       this.target = done - 1;
       if (prefersReducedMotion()) this.cursor.set(this.target);

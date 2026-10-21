@@ -29,8 +29,8 @@ canvas {
   position: absolute;
   top: 0;
   bottom: 0;
-  border-inline: 1px solid rgba(111, 177, 255, 0.6);
-  background: rgba(111, 177, 255, 0.18);
+  border-inline: 1px solid var(--roi-band-edge-dark);
+  background: var(--roi-band-dark);
 }
 
 .line {

@@ -34,10 +34,12 @@ export interface PredictionResponse {
     dimensoes_canonicas?: number[];
     espacamento_canonico?: number[];
     orientacao_original?: string;
+    /** Orientação em que as redes recebem o volume. 'IPL': índices do notebook (0 = anterior). */
+    orientacao_analise?: string;
     tipo_dado?: string;
   };
   metadados_varredura_cnn1: {
-    /** Regressão sem limite (não é probabilidade), no índice da leitura usada. */
+    /** Regressão sem limite (não é probabilidade), no índice da leitura usada (ver orientacao_analise). */
     roi_scores: number[];
     limite_inferior: number;
     limite_superior: number;

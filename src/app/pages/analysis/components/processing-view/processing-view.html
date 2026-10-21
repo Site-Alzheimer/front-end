@@ -47,7 +47,7 @@
       <p class="ui-card-title">Varredura da CNN1 <small>score de cada fatia coronal</small></p>
       <app-sagittal-locator [volume]="store.volume()" [n]="scores().length" [cursor]="cursor" />
       <app-roi-chart [scores]="scores()" [cursor]="cursor" />
-      <p class="axis"><span>← posterior</span><span>anterior →</span></p>
+      <p class="axis"><span>← anterior</span><span>posterior →</span></p>
       @if (!store.liveProgress()) {
         <p class="offline">Sem progresso ao vivo nesta conexão; o resultado chega ao final.</p>
       }
