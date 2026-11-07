@@ -13,32 +13,36 @@
       </p>
 
       <div class="hero__actions">
-        <a class="btn btn--primary" routerLink="/" fragment="diagnostico">Começar Diagnóstico</a>
-        <a class="btn btn--secondary" routerLink="/" fragment="equipe">Entrar em Contato</a>
+        <a class="btn btn--primary" routerLink="/">Começar análise</a>
+        <a class="btn btn--secondary" routerLink="/sobre" fragment="equipe">Entrar em Contato</a>
+      </div>
+
+      <div class="ui-card hero__note">
+        <p class="hero__note-title">Sobre o Alzheimer</p>
+        <p class="hero__note-text">
+          Estima-se que uma parcela significativa das pessoas com demência
+          no mundo ainda não recebeu um diagnóstico formal, segundo dados
+          da Alzheimer's Disease International.
+        </p>
+        <p class="hero__note-source">
+          Fonte:
+          <a href="https://www.alzint.org/" target="_blank" rel="noopener noreferrer">clique aqui</a>
+        </p>
       </div>
     </div>
 
     <div class="hero__visual">
-      <div class="hero__panel">
-        <img
-          class="hero__brain"
-          src="assets/images/hero-alzheimer.png"
-          alt="Representação de um cérebro com uma rede neural sobreposta"
-        />
-
-        <div class="hero__tooltip">
-          <p class="hero__tooltip-title">Sobre o Alzheimer</p>
-          <p class="hero__tooltip-text">
-            Estima-se que uma parcela significativa das pessoas com demência
-            no mundo ainda não recebeu um diagnóstico formal, segundo dados
-            da Alzheimer's Disease International.
-          </p>
-          <p class="hero__tooltip-source">
-            Fonte:
-            <a href="https://www.alzint.org/" target="_blank" rel="noopener noreferrer">clique aqui</a>
-          </p>
-        </div>
-      </div>
+      <video
+        class="hero__video"
+        src="assets/videos/hero-cerebro.mp4"
+        poster="assets/videos/hero-cerebro.jpg"
+        role="img"
+        aria-label="Reconstrução 3D de um cérebro girando, com os hipocampos em destaque"
+        [muted]="true"
+        [autoplay]="autoplay"
+        loop
+        playsinline
+      ></video>
     </div>
   </div>
 </section>

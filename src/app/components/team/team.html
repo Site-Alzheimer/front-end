@@ -3,35 +3,57 @@
     <h2 class="team__heading">Equipe</h2>
 
     <div class="team__columns">
-      <div class="team__column">
-        <h3 class="team__subheading">Time de Desenvolvimento</h3>
-        <div class="team__grid">
-          @for (member of developmentTeam; track $index) {
-            <article class="member" [class.member--highlight]="member.highlight">
-              <div class="member__photo"></div>
-              <div class="member__info">
-                <p class="member__name">{{ member.name }}</p>
-                <p class="member__role">{{ member.role }}</p>
-              </div>
-            </article>
+      @for (column of columns; track $index) {
+        <div class="team__column">
+          @for (group of column; track group.title) {
+            <div class="ui-card team__group">
+              <h3 class="team__subheading">{{ group.title }}</h3>
+              <ul class="team__list">
+                @for (member of group.members; track $index) {
+                  <li class="member">
+                    <span class="member__avatar" aria-hidden="true">
+                      @if (member.icon; as icon) {
+                        <app-icon [name]="icon" />
+                      } @else {
+                        {{ member.name.charAt(0) }}
+                      }
+                    </span>
+                    <div class="member__info">
+                      <p class="member__name">{{ member.name }}</p>
+                      @if (member.role) {
+                        <p class="member__role">{{ member.role }}</p>
+                      }
+                    </div>
+                    @if (member.linkedin) {
+                      <a
+                        class="member__link"
+                        [href]="member.linkedin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        [attr.aria-label]="'LinkedIn de ' + member.name"
+                        title="LinkedIn"
+                      >
+                        <app-icon name="brand-linkedin" />
+                      </a>
+                    }
+                    @if (member.lattes) {
+                      <a
+                        class="member__link member__link--text"
+                        [href]="member.lattes"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        [attr.aria-label]="'Currículo Lattes de ' + member.name"
+                      >
+                        Lattes
+                      </a>
+                    }
+                  </li>
+                }
+              </ul>
+            </div>
           }
         </div>
-      </div>
-
-      <div class="team__column">
-        <h3 class="team__subheading">Time de Pesquisa</h3>
-        <div class="team__grid">
-          @for (member of researchTeam; track $index) {
-            <article class="member" [class.member--highlight]="member.highlight">
-              <div class="member__photo"></div>
-              <div class="member__info">
-                <p class="member__name">{{ member.name }}</p>
-                <p class="member__role">{{ member.role }}</p>
-              </div>
-            </article>
-          }
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
