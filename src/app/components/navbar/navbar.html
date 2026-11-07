@@ -1,6 +1,6 @@
 <header class="navbar" [class.is-hidden]="hidden()">
   <div class="navbar__inner container">
-    <a class="navbar__brand" routerLink="/" fragment="inicio" (click)="selectSection('inicio')">
+    <a class="navbar__brand" routerLink="/" (click)="selectSection('analise')">
       <span class="navbar__logo" aria-hidden="true">
         <img src="assets/icon/logo-neuroia.svg" alt="Logo" />
       </span>
@@ -8,13 +8,13 @@
     </a>
 
     <nav class="navbar__links" [class.is-open]="menuOpen()">
-      @for (link of links; track link.fragment) {
+      @for (link of links; track link.id) {
         <a
           class="navbar__link"
-          [class.is-active]="activeSection() === link.fragment"
-          routerLink="/"
+          [class.is-active]="activeSection() === link.id"
+          [routerLink]="link.route"
           [fragment]="link.fragment"
-          (click)="selectSection(link.fragment)"
+          (click)="selectSection(link.id)"
         >
           {{ link.label | uppercase }}
         </a>

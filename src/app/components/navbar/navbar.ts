@@ -14,14 +14,14 @@ export class Navbar {
 
   protected readonly menuOpen = signal(false);
   protected readonly hidden = signal(false);
-  protected readonly activeSection = signal('inicio');
+  protected readonly activeSection = signal('analise');
   private lastScrollY = 0;
 
+  // A análise é a tela inicial (/); o resto do site fica em /sobre
   protected readonly links = [
-    { label: 'Início', fragment: 'inicio' },
-    { label: 'Sobre', fragment: 'sobre' },
-    { label: 'Diagnóstico', fragment: 'diagnostico' },
-    { label: 'Equipe', fragment: 'equipe' },
+    { id: 'analise', label: 'Análise', route: '/', fragment: undefined },
+    { id: 'sobre', label: 'Sobre', route: '/sobre', fragment: undefined },
+    { id: 'equipe', label: 'Equipe', route: '/sobre', fragment: 'equipe' },
   ];
 
   constructor() {
@@ -43,8 +43,8 @@ export class Navbar {
     this.menuOpen.update((value) => !value);
   }
 
-  protected selectSection(fragment: string): void {
-    this.activeSection.set(fragment);
+  protected selectSection(id: string): void {
+    this.activeSection.set(id);
     this.menuOpen.set(false);
   }
 
@@ -57,20 +57,12 @@ export class Navbar {
   }
 
   private updateActiveSection(): void {
-    // Fora da home, a análise pertence à seção "Diagnóstico"
-    if (
-      !this.router.url.startsWith('/#') &&
-      this.router.url !== '/' &&
-      !this.router.url.startsWith('/?')
-    ) {
-      this.activeSection.set('diagnostico');
-      return;
+    // Em /sobre, "Equipe" acende quando a seção chega ao topo; fora dela, tudo é análise
+    let id = 'analise';
+    if (this.router.url.startsWith('/sobre')) {
+      const equipe = document.getElementById('equipe');
+      id = equipe !== null && equipe.getBoundingClientRect().top <= 160 ? 'equipe' : 'sobre';
     }
-    const current = [...this.links]
-      .reverse()
-      .map((link) => document.getElementById(link.fragment))
-      .find((section) => section !== null && section.getBoundingClientRect().top <= 160);
-    const id = current?.id ?? 'inicio';
     if (id !== this.activeSection()) this.activeSection.set(id);
   }
 }

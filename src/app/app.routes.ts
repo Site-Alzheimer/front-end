@@ -1,12 +1,17 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './pages/home/home-page';
 
 export const routes: Routes = [
-  { path: '', component: HomePage, title: 'NeuroIA' },
+  // A tela inicial já é a de análise: envio do exame e carrossel de exemplos
   {
-    path: 'analise',
+    path: '',
     loadComponent: () => import('./pages/analysis/analysis-page').then((m) => m.AnalysisPage),
-    title: 'Análise · NeuroIA',
+    title: 'NeuroIA',
   },
+  {
+    path: 'sobre',
+    loadComponent: () => import('./pages/home/home-page').then((m) => m.HomePage),
+    title: 'Sobre · NeuroIA',
+  },
+  { path: 'analise', redirectTo: '' },
   { path: '**', redirectTo: '' },
 ];

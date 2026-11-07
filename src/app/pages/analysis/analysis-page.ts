@@ -30,12 +30,6 @@ export class AnalysisPage {
   /** Arquivo do usuário esperando o aceite do termo (as amostras não passam por aqui). */
   protected readonly awaitingConsent = signal<AnalysisSource | null>(null);
 
-  constructor() {
-    // amostra escolhida na home; "enviar o meu" chega sem exame e cai na tela de envio
-    const pendente = this.handoff.take();
-    if (pendente) this.request(pendente);
-  }
-
   protected request(source: AnalysisSource): void {
     if (source.kind === 'file' && !this.handoff.consentGiven()) this.awaitingConsent.set(source);
     else void this.store.start(source);

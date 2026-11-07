@@ -83,6 +83,9 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
   margin-top: 2px;
   padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, 0.18);
