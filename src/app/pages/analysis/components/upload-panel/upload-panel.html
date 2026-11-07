@@ -1,13 +1,29 @@
 <header class="ui-page-head">
-  <h1>Envie um exame de ressonância magnética</h1>
+  <h1>Analise uma ressonância magnética</h1>
   <p>
-    Volume 3D em NIfTI, com o plano coronal disponível. O arquivo é conferido no seu navegador antes
-    do envio e processado só para esta análise.
+    Escolha um exame de exemplo ou envie o seu. O exame é processado só para esta análise e não fica
+    guardado no servidor.
   </p>
 </header>
 
-<div class="layout">
-  <div>
+<!-- Sem amostras no servidor (site público sem exames com licença aberta), só o envio aparece -->
+<div class="layout" [class.layout--solo]="samples()?.length === 0">
+  @if (samples()?.length !== 0) {
+    <section class="samples" aria-labelledby="exemplos-titulo">
+      <h2 id="exemplos-titulo">Comece por um exame de exemplo</h2>
+      <p>Não tem uma ressonância em mãos? Escolha um exame e veja a análise completa.</p>
+      @if (samples() === null) {
+        <p class="ui-card samples__empty">Carregando…</p>
+      } @else {
+        <app-sample-carousel [samples]="samples()!" (pick)="useSample($event)" />
+      }
+    </section>
+  }
+
+  <section class="own" aria-labelledby="envio-titulo">
+    <h2 id="envio-titulo">
+      {{ samples()?.length === 0 ? 'Envie o seu exame' : 'Ou envie o seu exame' }}
+    </h2>
     <label
       class="drop"
       [class.is-dragging]="dragging()"
@@ -20,7 +36,7 @@
       /></span>
       <span class="drop__title">Arraste o arquivo para cá</span>
       <span class="drop__hint">ou</span>
-      <span class="ui-button ui-button--primary">Escolher arquivo</span>
+      <span class="ui-button">Escolher arquivo</span>
       <input type="file" accept=".nii,.gz" class="sr-only" (change)="onPick($event)" />
     </label>
     @if (problem()) {
@@ -31,58 +47,14 @@
     <ul class="specs">
       <li>
         <app-icon name="file-description" /><span
-          >Formatos aceitos: <b>.nii</b> e <b>.nii.gz</b> (NIfTI-1 ou NIfTI-2)</span
+          ><b>.nii</b> ou <b>.nii.gz</b> (NIfTI-1 ou NIfTI-2), com o plano coronal</span
         >
       </li>
       <li>
-        <app-icon name="check" /><span
-          >O cabeçalho é validado no navegador; arquivos que não são NIfTI não chegam a ser
-          enviados</span
-        >
-      </li>
-      <li>
-        <app-icon name="server" /><span
-          >O servidor processa o exame e não guarda o arquivo depois da análise</span
-        >
+        <app-icon name="check" /><span>Conferido no navegador antes do envio</span>
       </li>
     </ul>
-  </div>
-
-  <!-- Sem amostras no servidor (site público sem exames com licença aberta), a seção não aparece -->
-  @if (samples()?.length !== 0) {
-    <section class="samples">
-      <h2>Ou use um exame de exemplo</h2>
-      <p>Processado no servidor a partir da cópia dele, sem precisar enviar nada.</p>
-      <div class="ui-card">
-        @if (samples() === null) {
-          <p class="samples__empty">Carregando…</p>
-        } @else {
-          @for (s of samples()!; track s.id) {
-            <div class="sample">
-              <span class="sample__thumb">
-                @if (s.tem_miniatura) {
-                  <img [src]="thumbnail(s)" alt="" loading="lazy" />
-                }
-              </span>
-              <span>
-                <span class="sample__name">{{ s.arquivo }}</span>
-                <span class="sample__meta">{{ s.fonte }} · {{ sizeMb(s.tamanho_bytes) }} MB</span>
-                <span class="sample__clinical">
-                  <i
-                    class="ui-key"
-                    [class.ui-key--ad]="s.diagnostico_clinico === 'AD'"
-                    [class.ui-key--normal]="s.diagnostico_clinico !== 'AD'"
-                  ></i>
-                  Diagnóstico clínico: {{ clinical(s) }}
-                </span>
-              </span>
-              <button type="button" class="ui-button ui-button--small" (click)="useSample(s)">
-                Analisar
-              </button>
-            </div>
-          }
-        }
-      </div>
-    </section>
-  }
+  </section>
 </div>
+
+<app-research-note />

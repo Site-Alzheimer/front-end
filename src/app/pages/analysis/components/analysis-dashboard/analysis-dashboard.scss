@@ -75,74 +75,10 @@
   letter-spacing: -0.01em;
 }
 
-// Nota logo abaixo do resultado: três pontos lado a lado, discretos
-.note {
-  margin-top: 16px;
-  padding: 18px 22px 20px;
-}
-
-.note__title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
-  font-size: 0.9rem;
-  font-weight: 600;
-
-  app-icon {
-    color: var(--color-primary);
-  }
-}
-
-.note__list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    display: grid;
-    align-content: start;
-    gap: 4px;
-    padding: 0 22px;
-    font-size: 0.82rem;
-    line-height: 1.5;
-    color: var(--color-text-muted);
-  }
-
-  li:first-child {
-    padding-left: 0;
-  }
-
-  li + li {
-    border-left: 1px solid var(--color-border);
-  }
-
-  b {
-    font-size: 0.84rem;
-    color: var(--color-text-2);
-  }
-}
-
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-  }
-
-  .note__list {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-
-    li {
-      padding: 0;
-    }
-    li + li {
-      padding-top: 14px;
-      border-top: 1px solid var(--color-border);
-      border-left: 0;
-    }
   }
 
   .rail {

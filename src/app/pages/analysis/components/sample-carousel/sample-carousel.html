@@ -1,0 +1,56 @@
+<div class="carousel">
+  <ul class="track" #track>
+    @for (s of samples(); track $index) {
+      <li class="ui-card card">
+        <span class="card__thumb">
+          @if (s.tem_miniatura) {
+            <img [src]="thumbnail(s)" [alt]="'Corte coronal: ' + s.rotulo" loading="lazy" />
+          }
+        </span>
+        <div class="card__body">
+          <span class="card__name">{{ s.rotulo }}</span>
+          <span class="card__meta">{{ s.fonte }} · {{ sizeMb(s.tamanho_bytes) }} MB</span>
+          <span class="card__clinical">
+            <i
+              class="ui-key"
+              [class.ui-key--ad]="s.diagnostico_clinico === 'AD'"
+              [class.ui-key--normal]="s.diagnostico_clinico !== 'AD'"
+            ></i>
+            Diagnóstico clínico: {{ clinical(s) }}
+          </span>
+          @if (s.licenca) {
+            <span class="card__license" [title]="s.licenca">{{ s.licenca }}</span>
+          }
+          <button
+            type="button"
+            class="ui-button ui-button--small ui-button--primary"
+            (click)="pick.emit(s)"
+          >
+            Analisar
+          </button>
+        </div>
+      </li>
+    }
+  </ul>
+
+  @if (overflowing()) {
+    <button
+      type="button"
+      class="nav nav--prev"
+      [disabled]="atStart()"
+      aria-label="Exames anteriores"
+      (click)="step(-1)"
+    >
+      <app-icon name="chevron-left" />
+    </button>
+    <button
+      type="button"
+      class="nav nav--next"
+      [disabled]="atEnd()"
+      aria-label="Próximos exames"
+      (click)="step(1)"
+    >
+      <app-icon name="chevron-right" />
+    </button>
+  }
+</div>
