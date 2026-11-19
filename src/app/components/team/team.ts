@@ -43,7 +43,7 @@ export class Team {
         members: [
           {
             name: 'IFCE · Campus Limoeiro do Norte',
-            role: 'Servidor que hospeda o site',
+            role: 'Hospedagem do site',
             icon: 'server',
           },
         ],
