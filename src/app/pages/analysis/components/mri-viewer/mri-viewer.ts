@@ -13,6 +13,9 @@ import { Crop } from '../../analysis.models';
 import { DecodedVolume } from '../../volume/volume-decoder';
 import { ScanCursor } from '../../scan-cursor';
 import { svgEl } from '../../chart-utils';
+import { CORONAL, coronalScale } from '../../brain-illustration';
+
+let instancias = 0;
 
 // cinza → RGBA (Uint32 little-endian), montado uma vez
 const LUT = new Uint32Array(256).map((_, g) => (0xff000000 | (g << 16) | (g << 8) | g) >>> 0);
@@ -34,16 +37,27 @@ export class MriViewer {
   readonly showCropToggles = input(false);
   /** Exames de exemplo: sem o volume no navegador, mostra a entrada da CNN1 que a API devolve. */
   readonly serverImage = input<{ src: string; transform: string; index: number } | null>(null);
+  /** Total de fatias coronais, para a ilustração acompanhar a varredura sem o volume. */
+  readonly slices = input(256);
 
   protected readonly shownServerImage = computed(() =>
     !this.volume() && this.volumeState() === 'server' ? this.serverImage() : null,
   );
+  /** Exame de exemplo em análise: sem volume e sem imagem da API, um desenho genérico. */
+  protected readonly illustrated = computed(
+    () => !this.volume() && this.volumeState() === 'server' && !this.serverImage(),
+  );
+  protected readonly brainPaths = CORONAL;
+  /** Espelha o lado esquerdo do desenho na linha média (x = 100). */
+  protected readonly mirror = 'matrix(-1 0 0 1 200 0)';
+  protected readonly clipId = `cerebro-${++instancias}`;
   protected readonly showCnn1 = signal(true);
   protected readonly showCnn2 = signal(true);
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly overlay = viewChild.required<ElementRef<SVGSVGElement>>('overlay');
   private readonly label = viewChild.required<ElementRef<HTMLElement>>('label');
+  private readonly brain = viewChild<ElementRef<SVGGElement>>('brain');
   private image: ImageData | null = null;
 
   /** Largura do quadro que mantém a proporção física (mm) do corte. */
@@ -69,6 +83,19 @@ export class MriViewer {
     afterRenderEffect(() =>
       this.drawCrops(this.volume(), this.crops(), this.showCnn1(), this.showCnn2()),
     );
+    // A ilustração cresce e diminui com a fatia que a CNN1 está avaliando (fora dos signals)
+    afterRenderEffect((onCleanup) => {
+      const g = this.brain()?.nativeElement;
+      if (!g || !this.illustrated()) return;
+      const n = this.slices();
+      const label = this.label().nativeElement;
+      onCleanup(
+        this.cursor().listen((j) => {
+          g.style.transform = `scale(${coronalScale(j, n).toFixed(3)})`;
+          label.textContent = String(Math.max(0, Math.min(n - 1, j)));
+        }),
+      );
+    });
   }
 
   /** `i`: índice do notebook (0 = anterior); no volume canônico (y cresce para A) é ny − 1 − i. */

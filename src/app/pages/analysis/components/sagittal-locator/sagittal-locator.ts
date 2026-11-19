@@ -10,6 +10,7 @@ import {
 import { DecodedVolume } from '../../volume/volume-decoder';
 import { ScanCursor } from '../../scan-cursor';
 import { ROI_MARGIN, sliceLeft, sliceWidth } from '../chart-margin';
+import { SAGITTAL } from '../../brain-illustration';
 
 /**
  * Corte sagital médio com a janela da CNN1 e o cursor, alinhado ao eixo do gráfico: a coluna i é a
@@ -25,12 +26,26 @@ import { ROI_MARGIN, sliceLeft, sliceWidth } from '../chart-margin';
       [style.right.px]="margin.right"
     ></canvas>
     @if (!volume()) {
-      <span class="empty">corte sagital médio</span>
+      <!-- Sem o volume (exames de exemplo ficam no servidor): desenho genérico, no mesmo eixo -->
+      <svg
+        class="illus"
+        viewBox="0 0 256 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        [style.left.px]="margin.left"
+        [style.right.px]="margin.right"
+      >
+        <path class="illus__fill" [attr.d]="brain.cerebrum" />
+        <path class="illus__fill" [attr.d]="brain.cerebellum" />
+        <path class="illus__fill" [attr.d]="brain.stem" />
+        <path class="illus__line" [attr.d]="brain.details" />
+      </svg>
+      <span class="tag">ilustração</span>
     }
     @if (band(); as b) {
       <div class="band" [style.left]="b.left" [style.width]="b.width"></div>
     }
-    <div #line class="line"></div>
+    <div #line class="line" [class.line--glow]="!volume()"></div>
   `,
   styleUrl: './sagittal-locator.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +57,7 @@ export class SagittalLocator {
   readonly cursor = input.required<ScanCursor>();
 
   protected readonly margin = ROI_MARGIN;
+  protected readonly brain = SAGITTAL;
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly line = viewChild.required<ElementRef<HTMLElement>>('line');
 

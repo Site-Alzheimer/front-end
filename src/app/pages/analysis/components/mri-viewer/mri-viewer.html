@@ -1,7 +1,8 @@
 <div class="viewer">
   <div class="viewer__bar">
     <span [hidden]="!!shownServerImage()"
-      >Corte coronal · fatia <span #label class="ui-num">—</span></span
+      >{{ illustrated() ? 'Ilustração' : 'Corte coronal' }} · fatia
+      <span #label class="ui-num">—</span></span
     >
     @if (shownServerImage(); as s) {
       <span
@@ -32,10 +33,48 @@
                 recebeu.</span
               >
             } @else {
-              <app-icon name="server" />
+              <svg class="brain" viewBox="0 0 200 170" aria-hidden="true">
+                <clipPath [attr.id]="clipId">
+                  <path [attr.d]="brainPaths.hemisphere" />
+                  <path [attr.d]="brainPaths.hemisphere" [attr.transform]="mirror" />
+                  <path [attr.d]="brainPaths.stem" />
+                </clipPath>
+                <g #brain class="brain__shape">
+                  <path class="brain__fill" [attr.d]="brainPaths.hemisphere" />
+                  <path
+                    class="brain__fill"
+                    [attr.d]="brainPaths.hemisphere"
+                    [attr.transform]="mirror"
+                  />
+                  <path class="brain__fill" [attr.d]="brainPaths.stem" />
+                  <path class="brain__edge" [attr.d]="brainPaths.outline" />
+                  <path
+                    class="brain__edge"
+                    [attr.d]="brainPaths.outline"
+                    [attr.transform]="mirror"
+                  />
+                  <path class="brain__edge" [attr.d]="brainPaths.stemEdge" />
+                  <path class="brain__hole" [attr.d]="brainPaths.ventricle" />
+                  <path
+                    class="brain__hole"
+                    [attr.d]="brainPaths.ventricle"
+                    [attr.transform]="mirror"
+                  />
+                  <path class="brain__line" [attr.d]="brainPaths.details" />
+                  <path
+                    class="brain__line"
+                    [attr.d]="brainPaths.details"
+                    [attr.transform]="mirror"
+                  />
+                  <path class="brain__line" [attr.d]="brainPaths.midline" />
+                  <g [attr.clip-path]="'url(#' + clipId + ')'">
+                    <rect class="brain__scan" x="0" y="0" width="200" height="26" />
+                  </g>
+                </g>
+              </svg>
               <span
-                >Nos exames de exemplo, a ressonância fica no servidor. As imagens das redes
-                aparecem com o resultado.</span
+                >Ilustração. Nos exames de exemplo, a ressonância fica no servidor; as imagens das
+                redes aparecem com o resultado.</span
               >
             }
           }
