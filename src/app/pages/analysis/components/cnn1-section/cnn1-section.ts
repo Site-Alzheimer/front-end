@@ -4,6 +4,7 @@ import {
   DestroyRef,
   ElementRef,
   afterNextRender,
+  computed,
   inject,
   input,
   signal,
@@ -30,10 +31,17 @@ const FATIAS_POR_SEGUNDO = 90;
 export class Cnn1Section {
   readonly view = input.required<AnalysisView>();
   readonly volume = input<DecodedVolume | null>(null);
-  readonly volumeState = input<'none' | 'loading' | 'ready' | 'error'>('none');
+  readonly volumeState = input<'none' | 'loading' | 'ready' | 'error' | 'server'>('none');
   readonly volumeError = input('');
   readonly cursor = input.required<ScanCursor>();
 
+  /** Exames de exemplo: a entrada da CNN1 na fatia central, no lugar do volume. */
+  protected readonly serverImage = computed(() => {
+    const v = this.view();
+    return v.images
+      ? { src: v.images.cnn1, transform: v.images.cnn1Transform, index: v.central }
+      : null;
+  });
   protected readonly playing = signal(false);
   protected readonly tableOpen = signal(false);
   protected readonly fmt = fmt;

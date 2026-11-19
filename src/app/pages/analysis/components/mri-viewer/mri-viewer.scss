@@ -74,6 +74,12 @@
   }
 }
 
+.viewer__server-img {
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  border-radius: 4px;
+}
+
 .mark {
   position: absolute;
   font-size: 0.7rem;

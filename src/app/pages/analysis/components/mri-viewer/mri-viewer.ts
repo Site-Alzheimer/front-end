@@ -27,12 +27,17 @@ const LUT = new Uint32Array(256).map((_, g) => (0xff000000 | (g << 16) | (g << 8
 })
 export class MriViewer {
   readonly volume = input<DecodedVolume | null>(null);
-  readonly volumeState = input<'none' | 'loading' | 'ready' | 'error'>('none');
+  readonly volumeState = input<'none' | 'loading' | 'ready' | 'error' | 'server'>('none');
   readonly volumeError = input('');
   readonly cursor = input.required<ScanCursor>();
   readonly crops = input<{ cnn1?: Crop; cnn2?: Crop } | null>(null);
   readonly showCropToggles = input(false);
+  /** Exames de exemplo: sem o volume no navegador, mostra a entrada da CNN1 que a API devolve. */
+  readonly serverImage = input<{ src: string; transform: string; index: number } | null>(null);
 
+  protected readonly shownServerImage = computed(() =>
+    !this.volume() && this.volumeState() === 'server' ? this.serverImage() : null,
+  );
   protected readonly showCnn1 = signal(true);
   protected readonly showCnn2 = signal(true);
 

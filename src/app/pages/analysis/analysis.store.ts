@@ -1,8 +1,5 @@
 import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import { AnalysisSource } from '../../core/analysis-handoff';
-import { SamplesService } from '../../core/samples';
 import { AnalysisApi } from './analysis-api';
 import { AnalysisError, PredictionResponse, ProgressMessage } from './analysis.models';
 import { toView } from './analysis-view';
@@ -36,8 +33,6 @@ const ETAPA: Record<string, StepKey> = {
 @Injectable()
 export class AnalysisStore implements OnDestroy {
   private readonly api = inject(AnalysisApi);
-  private readonly samples = inject(SamplesService);
-  private readonly http = inject(HttpClient);
 
   readonly phase = signal<Phase>('idle');
   readonly source = signal<AnalysisSource | null>(null);
@@ -55,7 +50,7 @@ export class AnalysisStore implements OnDestroy {
   });
   readonly error = signal<AnalysisError | null>(null);
   readonly volume = signal<DecodedVolume | null>(null);
-  readonly volumeState = signal<'none' | 'loading' | 'ready' | 'error'>('none');
+  readonly volumeState = signal<'none' | 'loading' | 'ready' | 'error' | 'server'>('none');
   readonly volumeError = signal('');
   readonly timings = signal<ClientTimings>({});
 
@@ -194,29 +189,22 @@ export class AnalysisStore implements OnDestroy {
   }
 
   private loadVolumeFor(source: AnalysisSource): void {
-    const mesmo =
-      this.volumeSource &&
-      (this.volumeSource === source ||
-        (source.kind === 'sample' &&
-          this.volumeSource.kind === 'sample' &&
-          this.volumeSource.sample.id === source.sample.id));
-    if (mesmo && this.volumeState() !== 'error') return;
+    // Exames de exemplo (ADNI) ficam só no servidor: o navegador não recebe o arquivo
+    if (source.kind === 'sample') {
+      this.volumeJob?.cancel();
+      this.volumeJob = null;
+      this.volumeSource = source;
+      this.volume.set(null);
+      this.volumeState.set('server');
+      return;
+    }
+    if (this.volumeSource === source && this.volumeState() !== 'error') return;
     this.volumeJob?.cancel();
     this.volumeSource = source;
     this.volume.set(null);
     this.volumeState.set('loading');
-    const blob: Promise<Blob> =
-      source.kind === 'file'
-        ? Promise.resolve(source.file)
-        : firstValueFrom(
-            this.http.get(this.samples.fileUrl(source.sample.id), { responseType: 'blob' }),
-          );
-    blob
-      .then((b) => {
-        if (this.volumeSource !== source) return null;
-        this.volumeJob = loadVolume(b);
-        return this.volumeJob.promise;
-      })
+    this.volumeJob = loadVolume(source.file);
+    this.volumeJob.promise
       .then((v) => {
         if (!v || this.volumeSource !== source) return;
         this.volume.set(v);

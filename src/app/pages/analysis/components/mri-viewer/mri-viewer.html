@@ -1,6 +1,13 @@
 <div class="viewer">
   <div class="viewer__bar">
-    <span>Corte coronal · fatia <span #label class="ui-num">—</span></span>
+    <span [hidden]="!!shownServerImage()"
+      >Corte coronal · fatia <span #label class="ui-num">—</span></span
+    >
+    @if (shownServerImage(); as s) {
+      <span
+        >Entrada da CNN1 · fatia <span class="ui-num">{{ s.index }}</span></span
+      >
+    }
     <span>convenção neurológica</span>
   </div>
 
@@ -11,6 +18,26 @@
           @case ('loading') {
             <app-icon name="loader-2" class="is-spinning" />
             <span>Lendo a ressonância no navegador…</span>
+          }
+          @case ('server') {
+            @if (serverImage(); as s) {
+              <img
+                class="viewer__server-img"
+                [src]="s.src"
+                [style.transform]="s.transform"
+                alt="Entrada da CNN1 na fatia central"
+              />
+              <span
+                >Nos exames de exemplo, a ressonância fica no servidor. Esta é a imagem que a CNN1
+                recebeu.</span
+              >
+            } @else {
+              <app-icon name="server" />
+              <span
+                >Nos exames de exemplo, a ressonância fica no servidor. As imagens das redes
+                aparecem com o resultado.</span
+              >
+            }
           }
           @case ('error') {
             <app-icon name="alert-triangle" />
@@ -41,7 +68,7 @@
     </div>
   </div>
 
-  @if (showCropToggles() && crops()) {
+  @if (showCropToggles() && crops() && volume()) {
     <div class="viewer__foot">
       <button
         type="button"
