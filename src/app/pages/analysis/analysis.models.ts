@@ -85,7 +85,7 @@ export interface PredictionResponse {
 
 export type Stage = 'ready' | 'load' | 'cnn1' | 'extract' | 'cnn2' | 'done';
 
-/** Mensagem do WebSocket /ws/progress/{job_id}. */
+/** Evento do stream SSE /v1/progress/{job_id}. */
 export interface ProgressMessage {
   progress: number;
   status: string;

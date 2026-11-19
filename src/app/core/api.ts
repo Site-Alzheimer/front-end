@@ -6,9 +6,3 @@ const base = environment.apiUrl.replace(/\/$/, '');
 export function apiUrl(path: string): string {
   return `${base}${path}`;
 }
-
-/** URL do WebSocket correspondente, no mesmo host da API. */
-export function wsUrl(path: string): string {
-  const http = base || `${location.protocol}//${location.host}`;
-  return http.replace(/^http/, 'ws') + path;
-}

@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Subscription, TimeoutError, firstValueFrom, timeout } from 'rxjs';
-import { apiUrl, wsUrl } from '../../core/api';
+import { apiUrl } from '../../core/api';
 import { AnalysisSource } from '../../core/analysis-handoff';
 import { environment } from '../../../environments/environment';
 import { AnalysisError, PredictionResponse, ProgressMessage } from './analysis.models';
+import { openProgress } from './progress-stream';
 
 export interface RunHandlers {
   onProgress(message: ProgressMessage): void;
@@ -17,7 +18,7 @@ export interface RunResult {
   /** performance.now() de quando o upload terminou (ou da requisição, para amostras). */
   uploadDoneAt: number;
   responseAt: number;
-  /** false se o WebSocket não conectou e o progresso ficou indeterminado. */
+  /** false se o stream de progresso (SSE) não abriu e o progresso ficou indeterminado. */
   liveProgress: boolean;
 }
 
@@ -38,7 +39,7 @@ export class AnalysisApi {
   }
 
   /**
-   * Abre o WebSocket de progresso, espera o "ready" do servidor (até 2 s) e só então envia
+   * Abre o stream de progresso (SSE), espera o "ready" do servidor (até 2 s) e só então envia
    * o exame; assim nenhuma mensagem do início se perde. A resposta HTTP é a fonte da verdade.
    */
   async run(
@@ -48,7 +49,7 @@ export class AnalysisApi {
   ): Promise<RunResult> {
     const jobId = newJobId();
     let respondido = false;
-    const ws = await openProgress(jobId, (m) => {
+    const progresso = await openProgress(jobId, (m) => {
       if (!respondido && m.stage !== 'ready') handlers.onProgress(m);
     });
     const params = `job_id=${jobId}&visualizacao=true&explicacao=true`;
@@ -89,43 +90,17 @@ export class AnalysisApi {
         signal.addEventListener('abort', () => reject(new DOMException('cancelado', 'AbortError')));
       });
       respondido = true;
-      return { response, uploadDoneAt, responseAt: performance.now(), liveProgress: ws !== null };
+      return {
+        response,
+        uploadDoneAt,
+        responseAt: performance.now(),
+        liveProgress: progresso !== null,
+      };
     } finally {
       signal.removeEventListener('abort', aborto);
-      ws?.close();
+      progresso?.close();
     }
   }
-}
-
-function openProgress(
-  jobId: string,
-  onMessage: (m: ProgressMessage) => void,
-): Promise<WebSocket | null> {
-  return new Promise((resolve) => {
-    let ws: WebSocket;
-    try {
-      ws = new WebSocket(wsUrl(`/ws/progress/${jobId}`));
-    } catch {
-      resolve(null);
-      return;
-    }
-    const desistir = setTimeout(() => {
-      ws.close();
-      resolve(null);
-    }, 2000);
-    ws.onmessage = (e) => {
-      const m = JSON.parse(e.data) as ProgressMessage;
-      if (m.stage === 'ready') {
-        clearTimeout(desistir);
-        resolve(ws);
-      }
-      onMessage(m);
-    };
-    ws.onerror = () => {
-      clearTimeout(desistir);
-      resolve(null);
-    };
-  });
 }
 
 // .nii cru vai compactado (o back aceita .nii.gz); o ganho varia muito de exame para exame

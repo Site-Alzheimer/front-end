@@ -45,7 +45,7 @@ export class AnalysisStore implements OnDestroy {
   readonly status = signal('');
   readonly upload = signal({ loaded: 0, total: 0 });
   readonly cnn1 = signal({ done: 0, total: 0 });
-  /** Scores da CNN1 recebidos pelo WebSocket, já no índice canônico (NaN = ainda não chegou). */
+  /** Scores da CNN1 recebidos pelo stream de progresso, já no índice canônico (NaN = ainda não chegou). */
   readonly liveScores = signal<number[]>([]);
   readonly liveProgress = signal(true);
   readonly response = signal<PredictionResponse | null>(null);
