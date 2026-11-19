@@ -10,6 +10,9 @@ export interface Sample {
   fonte: string;
   diagnostico_clinico?: string;
   licenca?: string;
+  /** Idade do participante no exame, em anos. */
+  idade?: number;
+  sexo?: 'F' | 'M';
   arquivo: string;
   tamanho_bytes: number;
   tem_miniatura: boolean;
@@ -25,9 +28,5 @@ export class SamplesService {
 
   thumbnailUrl(id: string): string {
     return apiUrl(`/v1/amostras/${encodeURIComponent(id)}/miniatura`);
-  }
-
-  fileUrl(id: string): string {
-    return apiUrl(`/v1/amostras/${encodeURIComponent(id)}/arquivo`);
   }
 }

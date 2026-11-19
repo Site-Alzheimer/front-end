@@ -7,10 +7,6 @@ import { Sample, SamplesService } from '../../../../core/samples';
 import { AnalysisSource } from '../../../../core/analysis-handoff';
 import { sniffNifti } from '../../volume/sniff';
 
-// Provisório: cada amostra repetida 10 vezes, para ver o carrossel cheio. Voltar para 1 antes de
-// publicar amostras abertas no servidor.
-const REPETICOES_AMOSTRAS = 10;
-
 @Component({
   selector: 'app-upload-panel',
   imports: [Icon, ResearchNote, SampleCarousel],
@@ -32,7 +28,7 @@ export class UploadPanel {
       .list()
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: (s) => this.samples.set(Array.from({ length: REPETICOES_AMOSTRAS }, () => s).flat()),
+        next: (s) => this.samples.set(s),
         error: () => this.samples.set([]),
       });
   }

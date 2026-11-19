@@ -78,7 +78,12 @@ export class SampleCarousel {
     return DIAGNOSTICO[s.diagnostico_clinico ?? ''] ?? s.diagnostico_clinico ?? 'não informado';
   }
 
-  protected sizeMb(bytes: number): string {
-    return (bytes / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  /** "Feminino, 78 anos"; sem esses dados no manifesto, o tamanho do arquivo. */
+  protected person(s: Sample): string {
+    const sexo = s.sexo === 'F' ? 'Feminino' : s.sexo === 'M' ? 'Masculino' : '';
+    const idade = s.idade != null ? `${s.idade} anos` : '';
+    const partes = [sexo, idade].filter(Boolean);
+    if (partes.length) return partes.join(', ');
+    return `${(s.tamanho_bytes / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} MB`;
   }
 }
