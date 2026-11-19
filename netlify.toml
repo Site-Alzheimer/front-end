@@ -1,0 +1,5 @@
+# Deploy temporário (nov/2026, servidor do IFCE fora do ar): a Netlify monta o site com a
+# configuração "netlify", que aponta a API para o Space do Hugging Face
+[build]
+  command = "npx ng build --configuration production,netlify"
+  publish = "dist/front-end/browser"
