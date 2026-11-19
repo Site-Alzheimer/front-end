@@ -83,7 +83,12 @@ export interface PredictionResponse {
   };
 }
 
-export type Stage = 'ready' | 'load' | 'cnn1' | 'extract' | 'cnn2' | 'done';
+/**
+ * Etapas do stream de progresso. Com a fila de análises (RabbitMQ): `queued` enquanto o exame
+ * espera, `start` quando o worker o pega e `result` quando o resultado está guardado.
+ */
+export type Stage =
+  'ready' | 'queued' | 'start' | 'load' | 'cnn1' | 'extract' | 'cnn2' | 'done' | 'result';
 
 /** Evento do stream SSE /v1/progress/{job_id}. */
 export interface ProgressMessage {
@@ -95,6 +100,27 @@ export interface ProgressMessage {
   /** Índice do primeiro score do lote. */
   start?: number;
   scores?: number[];
+  /** `queued`: lugar na fila, contando os exames em análise (com um em análise, o próximo é o 2º). */
+  posicao?: number;
+  /** `result`: status HTTP que GET /v1/analises/{job_id} vai devolver. */
+  http_status?: number;
+}
+
+/** GET /healthz. `fila` só existe quando a API usa a fila de análises. */
+export interface HealthResponse {
+  status: 'ok' | 'degraded';
+  /** Com a fila: há worker conectado (ele só consome depois de carregar as CNNs). */
+  models_loaded: boolean;
+  fila?: { conectada: boolean; workers: number; aguardando: number };
+}
+
+/** Resposta 202 de POST /v1/analises e de GET /v1/analises/{job_id} enquanto o exame espera. */
+export interface QueueTicket {
+  job_id: string;
+  estado: 'na_fila' | 'processando';
+  posicao?: number;
+  /** Caminho do resultado (GET). */
+  resultado: string;
 }
 
 export type ErrorKind = 'format' | 'starting' | 'server' | 'network' | 'timeout';

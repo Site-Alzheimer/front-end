@@ -1,13 +1,16 @@
 import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core';
 import { AnalysisSource } from '../../core/analysis-handoff';
-import { AnalysisApi } from './analysis-api';
+import { AnalysisApi, ServerHealth } from './analysis-api';
 import { AnalysisError, PredictionResponse, ProgressMessage } from './analysis.models';
 import { toView } from './analysis-view';
 import { DecodedVolume } from './volume/volume-decoder';
 import { VolumeJob, loadVolume } from './volume/volume-client';
 
 export type Phase = 'idle' | 'processing' | 'done' | 'error';
-export type StepKey = 'upload' | 'load' | 'cnn1' | 'extract' | 'cnn2' | 'done';
+export type StepKey = 'upload' | 'queue' | 'load' | 'cnn1' | 'extract' | 'cnn2' | 'done';
+
+/** Ordem das etapas na tela; `queue` só aparece quando a API usa a fila de análises. */
+export const STEP_ORDER: StepKey[] = ['upload', 'queue', 'load', 'cnn1', 'extract', 'cnn2', 'done'];
 
 export interface ClientTimings {
   compressMs?: number;
@@ -22,6 +25,8 @@ export interface ClientTimings {
 }
 
 const ETAPA: Record<string, StepKey> = {
+  // o worker da fila pegou o exame: a leitura do volume começa em seguida
+  start: 'load',
   load: 'load',
   cnn1: 'cnn1',
   extract: 'extract',
@@ -43,6 +48,10 @@ export class AnalysisStore implements OnDestroy {
   /** Scores da CNN1 recebidos pelo stream de progresso, já no índice canônico (NaN = ainda não chegou). */
   readonly liveScores = signal<number[]>([]);
   readonly liveProgress = signal(true);
+  /** A API põe os exames numa fila (RabbitMQ). */
+  readonly usesQueue = signal(false);
+  /** Lugar na fila, contando os exames em análise; null fora da fila. */
+  readonly queuePosition = signal<number | null>(null);
   readonly response = signal<PredictionResponse | null>(null);
   readonly view = computed(() => {
     const r = this.response();
@@ -75,6 +84,8 @@ export class AnalysisStore implements OnDestroy {
     this.upload.set({ loaded: 0, total: source.kind === 'file' ? source.file.size : 0 });
     this.cnn1.set({ done: 0, total: 0 });
     this.liveScores.set([]);
+    this.usesQueue.set(false);
+    this.queuePosition.set(null);
     this.response.set(null);
     this.error.set(null);
     this.timings.set({});
@@ -82,21 +93,32 @@ export class AnalysisStore implements OnDestroy {
     this.loadVolumeFor(source); // em paralelo com o envio
 
     try {
-      await this.waitForServer(abort.signal);
+      const fila = (await this.waitForServer(abort.signal)).queue;
+      this.usesQueue.set(fila);
+      if (fila && source.kind === 'sample') {
+        this.step.set('queue');
+        this.status.set('Entrando na fila de análise…');
+      }
       const run = await this.api.run(
         source,
         {
           onUpload: (loaded, total) => {
             this.upload.set({ loaded, total });
-            this.status.set(
-              loaded < total ? 'Enviando o exame…' : 'Exame enviado. Aguardando o servidor…',
-            );
+            if (loaded < total) {
+              this.status.set('Enviando o exame…');
+            } else if (fila) {
+              this.advance('queue');
+              this.status.set('Exame enviado. Entrando na fila de análise…');
+            } else {
+              this.status.set('Exame enviado. Aguardando o servidor…');
+            }
           },
           onCompressed: (bytes, ms) =>
             this.timings.update((t) => ({ ...t, compressMs: ms, uploadBytes: bytes })),
           onProgress: (m) => this.onProgress(m),
         },
         abort.signal,
+        fila,
       );
       if (abort.signal.aborted) return;
       this.uploadDoneAt = run.uploadDoneAt;
@@ -149,9 +171,23 @@ export class AnalysisStore implements OnDestroy {
     this.volumeJob?.cancel();
   }
 
+  /** Avança para a etapa, nunca volta (os eventos da fila e do envio podem se cruzar). */
+  private advance(etapa: StepKey): void {
+    if (STEP_ORDER.indexOf(etapa) > STEP_ORDER.indexOf(this.step())) this.step.set(etapa);
+  }
+
   private onProgress(m: ProgressMessage): void {
+    if (m.stage === 'queued') {
+      // posição só vale enquanto o exame espera; depois do início, um aviso atrasado é ignorado
+      if (!m.posicao || STEP_ORDER.indexOf(this.step()) > STEP_ORDER.indexOf('queue')) return;
+      this.advance('queue');
+      this.queuePosition.set(m.posicao);
+      this.status.set(queueStatus(m.posicao));
+      return;
+    }
+    if (m.stage === 'start') this.queuePosition.set(null);
     const etapa = m.stage && ETAPA[m.stage];
-    if (etapa) this.step.set(etapa);
+    if (etapa) this.advance(etapa);
     if (m.stage === 'load') this.status.set('Lendo o volume no servidor…');
     if (m.stage === 'cnn1' && m.done != null && m.total) {
       this.cnn1.set({ done: m.done, total: m.total });
@@ -168,11 +204,11 @@ export class AnalysisStore implements OnDestroy {
     if (m.stage === 'cnn2') this.status.set('CNN2 classificou as 19 fatias');
   }
 
-  private async waitForServer(signal: AbortSignal): Promise<void> {
+  private async waitForServer(signal: AbortSignal): Promise<ServerHealth> {
     for (let tentativa = 0; tentativa < 20; tentativa++) {
-      const estado = await this.api.health();
-      if (estado === 'ok') return;
-      if (estado === 'down') {
+      const saude = await this.api.health();
+      if (saude.state === 'ok') return saude;
+      if (saude.state === 'down') {
         throw new AnalysisError(
           'network',
           'Não foi possível falar com o servidor. Confira se a API está no ar.',
@@ -216,4 +252,11 @@ export class AnalysisStore implements OnDestroy {
         this.volumeState.set('error');
       });
   }
+}
+
+/** "Na fila: 2 exames na frente do seu." A posição conta o exame em análise. */
+export function queueStatus(posicao: number): string {
+  const frente = posicao - 1;
+  if (frente <= 0) return 'Na fila: o seu exame é o próximo.';
+  return `Na fila: ${frente} ${frente === 1 ? 'exame' : 'exames'} na frente do seu.`;
 }

@@ -8,16 +8,16 @@ import {
   inject,
 } from '@angular/core';
 import { Icon } from '../../../../shared/icon/icon';
-import { AnalysisStore, StepKey } from '../../analysis.store';
+import { AnalysisStore, STEP_ORDER, StepKey } from '../../analysis.store';
 import { ScanCursor } from '../../scan-cursor';
 import { fmt, prefersReducedMotion } from '../../chart-utils';
 import { MriViewer } from '../mri-viewer/mri-viewer';
 import { RoiChart } from '../roi-chart/roi-chart';
 import { SagittalLocator } from '../sagittal-locator/sagittal-locator';
 
-const ORDEM: StepKey[] = ['upload', 'load', 'cnn1', 'extract', 'cnn2', 'done'];
 const NOMES: Record<StepKey, string> = {
   upload: 'Envio do exame',
+  queue: 'Fila de análise',
   load: 'Leitura do volume',
   cnn1: 'CNN1 · varredura coronal',
   extract: 'Extração das 19 fatias',
@@ -41,15 +41,20 @@ export class ProcessingView {
   private started = false;
 
   protected readonly steps = computed(() => {
-    const atual = ORDEM.indexOf(this.store.step());
+    const atual = STEP_ORDER.indexOf(this.store.step());
     const s = this.store.source();
     const upload = this.store.upload();
     const cnn1 = this.store.cnn1();
-    return ORDEM.filter((k) => k !== 'upload' || s?.kind === 'file').map((k) => {
-      const i = ORDEM.indexOf(k);
+    const fila = this.store.usesQueue();
+    const posicao = this.store.queuePosition();
+    const visivel = (k: StepKey): boolean =>
+      (k !== 'upload' || s?.kind === 'file') && (k !== 'queue' || fila);
+    return STEP_ORDER.filter(visivel).map((k) => {
+      const i = STEP_ORDER.indexOf(k);
       let detalhe = '';
       if (k === 'upload' && upload.total)
         detalhe = `${fmt(upload.loaded / 1e6, 1)} de ${fmt(upload.total / 1e6, 1)} MB`;
+      if (k === 'queue' && i === atual && posicao) detalhe = `${posicao}º da fila`;
       if (k === 'cnn1' && cnn1.total) detalhe = `${cnn1.done} / ${cnn1.total} fatias`;
       if (k === 'cnn2' && i < atual) detalhe = '19 / 19 fatias';
       return {
