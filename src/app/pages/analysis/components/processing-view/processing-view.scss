@@ -139,3 +139,41 @@ app-sagittal-locator {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+// "Análise concluída": o check se desenha antes da troca para o painel
+.finished {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--good);
+
+  svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  circle {
+    stroke-dasharray: 126;
+    stroke-dashoffset: 126;
+    animation: tracar 0.4s ease-out forwards;
+  }
+  path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: tracar 0.25s 0.35s ease-out forwards;
+  }
+}
+
+@keyframes tracar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

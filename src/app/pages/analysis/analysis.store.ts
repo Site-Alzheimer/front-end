@@ -3,6 +3,7 @@ import { AnalysisSource } from '../../core/analysis-handoff';
 import { AnalysisApi, ServerHealth } from './analysis-api';
 import { AnalysisError, PredictionResponse, ProgressMessage } from './analysis.models';
 import { toView } from './analysis-view';
+import { prefersReducedMotion } from './chart-utils';
 import { DecodedVolume } from './volume/volume-decoder';
 import { VolumeJob, loadVolume } from './volume/volume-client';
 
@@ -19,10 +20,18 @@ export interface ClientTimings {
   uploadMs?: number;
   /** Do fim do upload até a resposta. */
   waitMs?: number;
-  /** Do fim do upload até o painel desenhado: a métrica de tempo de resposta do TCC. */
+  /**
+   * Do fim do upload até o painel desenhado: a métrica de tempo de resposta do TCC. Não conta a
+   * pausa do "Análise concluída" (finishHoldMs), que é só visual.
+   */
   uploadToRenderMs?: number;
+  /** Pausa em que a tela de processamento mostra "Análise concluída" antes do painel. */
+  finishHoldMs?: number;
   totalMs?: number;
 }
+
+/** Quanto tempo o "Análise concluída" fica na tela antes do painel. */
+const PAUSA_CONCLUSAO_MS = 800;
 
 const ETAPA: Record<string, StepKey> = {
   // o worker da fila pegou o exame: a leitura do volume começa em seguida
@@ -53,6 +62,8 @@ export class AnalysisStore implements OnDestroy {
   /** Lugar na fila, contando os exames em análise; null fora da fila. */
   readonly queuePosition = signal<number | null>(null);
   readonly response = signal<PredictionResponse | null>(null);
+  /** O resultado chegou: a tela de processamento mostra "Análise concluída" antes do painel. */
+  readonly finished = signal(false);
   readonly view = computed(() => {
     const r = this.response();
     return r ? toView(r) : null;
@@ -73,6 +84,7 @@ export class AnalysisStore implements OnDestroy {
   private volumeSource: AnalysisSource | null = null;
   private t0 = 0;
   private uploadDoneAt = 0;
+  private finishHoldMs = 0;
 
   async start(source: AnalysisSource): Promise<void> {
     this.abort?.abort();
@@ -87,6 +99,8 @@ export class AnalysisStore implements OnDestroy {
     this.usesQueue.set(false);
     this.queuePosition.set(null);
     this.response.set(null);
+    this.finished.set(false);
+    this.finishHoldMs = 0;
     this.error.set(null);
     this.timings.set({});
     this.t0 = performance.now();
@@ -130,6 +144,12 @@ export class AnalysisStore implements OnDestroy {
       }));
       this.step.set('done');
       this.response.set(run.response);
+      this.finished.set(true);
+      this.finishHoldMs = prefersReducedMotion() ? 0 : PAUSA_CONCLUSAO_MS;
+      if (this.finishHoldMs) {
+        await new Promise((resolve) => setTimeout(resolve, this.finishHoldMs));
+        if (abort.signal.aborted) return;
+      }
       this.phase.set('done');
     } catch (e) {
       if (abort.signal.aborted || (e instanceof DOMException && e.name === 'AbortError')) return;
@@ -143,7 +163,8 @@ export class AnalysisStore implements OnDestroy {
     const agora = performance.now();
     this.timings.update((t) => ({
       ...t,
-      uploadToRenderMs: agora - this.uploadDoneAt,
+      uploadToRenderMs: agora - this.uploadDoneAt - this.finishHoldMs,
+      finishHoldMs: this.finishHoldMs,
       totalMs: agora - this.t0,
     }));
   }

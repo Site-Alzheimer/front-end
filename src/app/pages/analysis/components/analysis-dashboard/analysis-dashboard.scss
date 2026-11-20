@@ -98,3 +98,34 @@
     }
   }
 }
+
+// Chegada do painel: cabeçalho, menu e seções sobem em sequência
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.exam,
+.rail,
+.section {
+  animation: subir 0.45s ease-out both;
+}
+.rail {
+  animation-delay: 0.06s;
+}
+.section:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.section:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exam,
+  .rail,
+  .section {
+    animation: none;
+  }
+}

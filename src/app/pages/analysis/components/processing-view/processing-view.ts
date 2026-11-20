@@ -41,7 +41,8 @@ export class ProcessingView {
   private started = false;
 
   protected readonly steps = computed(() => {
-    const atual = STEP_ORDER.indexOf(this.store.step());
+    // com o resultado na mão, todas as etapas ficam concluídas
+    const atual = this.store.finished() ? STEP_ORDER.length : STEP_ORDER.indexOf(this.store.step());
     const s = this.store.source();
     const upload = this.store.upload();
     const cnn1 = this.store.cnn1();
